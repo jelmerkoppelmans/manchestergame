@@ -1,0 +1,16 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Challenges for {{ region }} - Day {{ day }}</title>
+</head>
+<body>
+    <h1>Challenges in {{ region }} for Day {{ day }}</h1>
+    <ul>
+        {% for challenge in challenges %}
+        <li><strong>{{ challenge.challenge_name }}</strong>: {{ challenge.description }} (Level: {{ challenge.level }})</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Back to Home</a>
+</body>
+</html>
