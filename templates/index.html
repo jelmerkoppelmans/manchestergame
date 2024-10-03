@@ -97,9 +97,117 @@
             <button type="submit">Deposit</button>
         </form>
 
-        <!-- Navigation to Challenges Page -->
-        <h2>View Challenges</h2>
-        <a href="/challenges/1/Northern%20Quarter">View Challenges by Region and Day</a>
+        <!-- View Challenges -->
+        <h2>View Challenges by Region and Day</h2>
+        <form action="/challenges" method="GET">
+            <label for="day">Select Day:</label>
+            <select name="day" required>
+                <option value="1">Day 1</option>
+                <option value="2">Day 2</option>
+            </select>
+
+            <label for="region">Select Region:</label>
+            <select name="region" required>
+                <option value="Northern Quarter">Northern Quarter</option>
+                <option value="Ancoats">Ancoats</option>
+                <option value="Spinningfields">Spinningfields</option>
+                <option value="Castlefield">Castlefield</option>
+                <option value="Deansgate">Deansgate</option>
+                <option value="Piccadilly Gardens">Piccadilly Gardens</option>
+                <option value="Oxford Road">Oxford Road</option>
+            </select>
+
+            <button type="submit">View Challenges</button>
+        </form>
+
+        <!-- Complete a Challenge Form -->
+        <h2>Complete a Challenge</h2>
+        <form action="/complete_challenge" method="POST">
+            <label for="team_id">Select Team:</label>
+            <select name="team_id" required>
+                {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                {% endfor %}
+            </select>
+
+            <label for="challenge_id">Select Challenge:</label>
+            <select name="challenge_id" required>
+                {% for challenge in challenges %}
+                <option value="{{ challenge.id }}">{{ challenge.challenge_name }} (ID: {{ challenge.id }}, Day {{ challenge.day }} - {{ challenge.region }})</option>
+                {% endfor %}
+            </select>
+
+            <label for="wager">Wager Amount:</label>
+            <input type="number" name="wager" placeholder="Wager Amount" required>
+
+            <label for="result">Result:</label>
+            <select name="result">
+                <option value="win">Win</option>
+                <option value="lose">Lose</option>
+            </select>
+
+            <button type="submit">Submit Result</button>
+        </form>
+
+        <!-- Perform a Steal Form -->
+        <h2>Perform a Steal</h2>
+        <form action="/steal_challenge" method="POST">
+            <label for="winner_id">Select Winning Team:</label>
+            <select name="winner_id" required>
+                {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                {% endfor %}
+            </select>
+
+            <label for="loser_id">Select Losing Team:</label>
+            <select name="loser_id" required>
+                {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                {% endfor %}
+            </select>
+
+            <label for="percentage">Steal Percentage:</label>
+            <input type="number" name="percentage" placeholder="Steal Percentage" required>
+
+            <button type="submit">Steal</button>
+        </form>
+
+        <!-- Select Transit Method Form -->
+        <h2>Select Transit Method</h2>
+        <form action="/select_transit" method="POST">
+            <label for="team_id">Select Team:</label>
+            <select name="team_id" required>
+                {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                {% endfor %}
+            </select>
+
+            <label for="distance">Distance to Next Region (km):</label>
+            <input type="number" name="distance" placeholder="Distance in km" required>
+
+            <label for="transport_mode">Select Mode of Transport:</label>
+            <select name="transport_mode" required>
+                <option value="walking">Walking (Free, 5 km/h)</option>
+                <option value="bus">Bus (£10 per minute, 20 km/h)</option>
+                <option value="tram">Tram (£20 per minute, 30 km/h)</option>
+                <option value="train">Train (£30 per minute, 45 km/h)</option>
+                <option value="taxi">Taxi (£40 per minute, 40 km/h)</option>
+                <option value="uber">Uber (£50 per minute, 50 km/h)</option>
+            </select>
+
+            <button type="submit">Calculate Cost and Travel Time</button>
+        </form>
+
+        <!-- Add Daily Bonus Button -->
+        <h2>Add Daily Bonus</h2>
+        <a href="/add_day_bonus" class="btn">Add £1000 Bonus to All Teams</a>
+
+        <!-- Reset Teams Button -->
+        <h2>Reset Teams</h2>
+        <form action="/admin/reset-teams" method="POST">
+            <button type="submit" class="btn">Reset All Teams</button>
+        </form>
+
     </div>
 
 </body>
