@@ -33,129 +33,79 @@ class RegionBonus(db.Model):
     region = db.Column(db.String(100), nullable=False)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
 
+class Deposit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    region = db.Column(db.String(100), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    amount = db.Column(db.Float, default=0)
+
+    team = db.relationship('Team', backref=db.backref('deposits', lazy=True))
+
 # Routes
 @app.route('/')
 def index():
     teams = Team.query.all()  # Fetch all teams from the database
-    challenges = Challenge.query.all()  # Fetch all challenges from the database
-    return render_template('index.html', teams=teams, challenges=challenges)
+    regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
+    
+    # Fetch deposit information for each region
+    region_deposits = {}
+    for region in regions:
+        deposits = Deposit.query.filter_by(region=region).all()
+        highest_deposit = max(deposits, key=lambda d: d.amount, default=None)
+        region_deposits[region] = {
+            'total': sum(d.amount for d in deposits),
+            'owner': highest_deposit.team.name if highest_deposit else None
+        }
 
-@app.route('/add_team', methods=['POST'])
-def add_team():
-    team_name = request.form['team_name']
-    new_team = Team(name=team_name)
-    db.session.add(new_team)
-    db.session.commit()
-    flash('Team added successfully!')
-    return redirect(url_for('index'))
+    return render_template('index.html', teams=teams, region_deposits=region_deposits)
 
-@app.route('/challenges/<int:day>/<string:region>')
-def challenges(day, region):
-    challenges = Challenge.query.filter_by(day=day, region=region).all()
-    return render_template('challenge.html', challenges=challenges, day=day, region=region)
-
-@app.route('/complete_challenge', methods=['POST'])
-def complete_challenge():
+@app.route('/deposit', methods=['POST'])
+def deposit():
     team_id = request.form['team_id']
-    challenge_id = request.form['challenge_id']
-    wager = float(request.form['wager'])
-    result = request.form['result']
-    
+    region = request.form['region']
+    amount = float(request.form['amount'])
+
     team = Team.query.get(team_id)
-    challenge = Challenge.query.get(challenge_id)
+    if team.budget < amount:
+        flash(f"Not enough budget to deposit £{amount}. Current budget: £{team.budget}.")
+        return redirect(url_for('index'))
+
+    # Check if the team already has a deposit in the region
+    existing_deposit = Deposit.query.filter_by(team_id=team_id, region=region).first()
     
-    multiplier = 1.5 if challenge.level == 'Easy' else 2 if challenge.level == 'Moderate' else 3
-    
-    if result == 'win':
-        team.budget += wager * multiplier
+    if existing_deposit:
+        # Add to the existing deposit
+        existing_deposit.amount += amount
     else:
-        team.budget -= wager
-    
-    # Check for region bonus
-    if not RegionBonus.query.filter_by(region=challenge.region).first():
-        team.budget += 500
-        new_bonus = RegionBonus(region=challenge.region, team_id=team.id)
-        db.session.add(new_bonus)
-    
+        # Create a new deposit record
+        new_deposit = Deposit(region=region, team_id=team_id, amount=amount)
+        db.session.add(new_deposit)
+
+    # Deduct the amount from the team's budget
+    team.budget -= amount
     db.session.commit()
-    flash(f'Challenge completed! New budget: £{team.budget}')
+
+    flash(f"£{amount} deposited in {region}. New budget: £{team.budget}.")
     return redirect(url_for('index'))
 
-@app.route('/steal_challenge', methods=['POST'])
-def steal_challenge():
-    winner_id = request.form['winner_id']
-    loser_id = request.form['loser_id']
-    percentage = float(request.form['percentage'])
+@app.route('/region_status')
+def region_status():
+    regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
     
-    winner = Team.query.get(winner_id)
-    loser = Team.query.get(loser_id)
-    
-    steal_amount = loser.budget * (percentage / 100)
-    winner.budget += steal_amount
-    loser.budget -= steal_amount
-    
-    db.session.commit()
-    flash(f'{percentage}% of {loser.name}\'s budget stolen! New budget: £{winner.budget}')
-    return redirect(url_for('index'))
+    # Fetch deposit information for each region
+    region_deposits = {}
+    for region in regions:
+        deposits = Deposit.query.filter_by(region=region).all()
+        highest_deposit = max(deposits, key=lambda d: d.amount, default=None)
+        region_deposits[region] = {
+            'total': sum(d.amount for d in deposits),
+            'owner': highest_deposit.team.name if highest_deposit else None
+        }
 
-@app.route('/select_transit', methods=['POST'])
-def select_transit():
-    team_id = request.form['team_id']
-    distance = float(request.form['distance'])  # Distance in kilometers
-    transport_mode = request.form['transport_mode']
-    
-    # Define speeds and costs per mode of transport
-    transport_data = {
-        'walking': {'speed': 5, 'cost_per_min': 0},
-        'bus': {'speed': 20, 'cost_per_min': 10},
-        'tram': {'speed': 30, 'cost_per_min': 20},
-        'train': {'speed': 45, 'cost_per_min': 30},
-        'taxi': {'speed': 40, 'cost_per_min': 40},
-        'uber': {'speed': 50, 'cost_per_min': 50}
-    }
-    
-    # Get the speed and cost per minute for the selected transport mode
-    speed = transport_data[transport_mode]['speed']  # km/h
-    cost_per_min = transport_data[transport_mode]['cost_per_min']  # £/min
-    
-    # Calculate the time it takes to travel the distance (in minutes)
-    travel_time = (distance / speed) * 60  # Convert to minutes
-    
-    # Calculate the total cost of the travel
-    travel_cost = travel_time * cost_per_min
-    
-    # Deduct the travel cost from the team's budget
-    team = Team.query.get(team_id)
-    team.budget -= travel_cost
-    db.session.commit()
-    
-    # Flash a message showing the travel time and cost
-    flash(f'Travel time: {travel_time:.2f} minutes. Cost: £{travel_cost:.2f}. New budget: £{team.budget:.2f}.')
-    return redirect(url_for('index'))
-
-@app.route('/add_day_bonus')
-def add_day_bonus():
-    teams = Team.query.all()
-    for team in teams:
-        team.budget += 1000
-    db.session.commit()
-    flash('£1000 bonus added to all teams!')
-    return redirect(url_for('index'))
-
-@app.route('/admin/reset-teams', methods=['POST'])
-def reset_teams():
-    try:
-        # Clear all teams' balances by setting them to 0
-        teams = Team.query.all()
-        for team in teams:
-            team.budget = 0.0  # Reset budget to zero
-        db.session.commit()
-        flash('All team balances have been reset to £0.')
-    except Exception as e:
-        flash(f'Error resetting teams: {str(e)}')
-    return redirect(url_for('index'))
+    return render_template('region_status.html', region_deposits=region_deposits)
 
 # Create the database tables
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Ensure the database
+        db.create_all()  # Ensure the database and tables are created
+    app.run(debug=True)

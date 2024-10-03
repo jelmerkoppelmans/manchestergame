@@ -30,27 +30,30 @@
         {% endif %}
         {% endwith %}
 
-<!--         <!-- Add New Team Form -->
-        <!-- <h2>Add a New Team</h2> -->
-        <!-- <form action="/add_team" method="POST"> -->
-            <!-- <input type="text" name="team_name" placeholder="Enter team name" required> -->
-            <!-- <button type="submit">Add Team</button> -->
-        <!-- </form> -->
+        <!-- Region Ownership and Deposit Summary -->
+        <h2>Region Status</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th>Total Deposited</th>
+                    <th>Current Owner</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for region, data in region_deposits.items() %}
+                <tr>
+                    <td>{{ region }}</td>
+                    <td>£{{ data.total }}</td>
+                    <td>{{ data.owner if data.owner else "None" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-        <!-- Select Challenges by Region and Day -->
-        <h2>Select Challenges by Region and Day</h2>
-        <ul class="challenge-links">
-            <li><a href="/challenges/1/Northern Quarter">Day 1 - Northern Quarter</a></li>
-            <li><a href="/challenges/1/Ancoats">Day 1 - Ancoats</a></li>
-            <li><a href="/challenges/2/Spinningfields">Day 2 - Spinningfields</a></li>
-            <li><a href="/challenges/2/Castlefield">Day 2 - Castlefield</a></li>
-            <li><a href="/challenges/2/Deansgate">Day 2 - Deansgate</a></li>
-            <li><a href="/challenges/2/Piccadilly Gardens">Day 2 - Piccadilly Gardens</a></li>
-        </ul>
-
-        <!-- Complete a Challenge Form -->
-        <h2>Complete a Challenge</h2>
-        <form action="/complete_challenge" method="POST">
+        <!-- Deposit Form -->
+        <h2>Make a Deposit</h2>
+        <form action="/deposit" method="POST">
             <label for="team_id">Select Team:</label>
             <select name="team_id" required>
                 {% for team in teams %}
@@ -58,84 +61,27 @@
                 {% endfor %}
             </select>
 
-            <label for="challenge_id">Select Challenge:</label>
-            <select name="challenge_id" required>
-                {% for challenge in challenges %}
-                <option value="{{ challenge.id }}">{{ challenge.challenge_name }} (ID: {{ challenge.id }}, Day {{ challenge.day }} - {{ challenge.region }})</option>
-                {% endfor %}
+            <label for="region">Select Region:</label>
+            <select name="region" required>
+                <option value="Northern Quarter">Northern Quarter</option>
+                <option value="Ancoats">Ancoats</option>
+                <option value="Spinningfields">Spinningfields</option>
+                <option value="Castlefield">Castlefield</option>
+                <option value="Deansgate">Deansgate</option>
+                <option value="Piccadilly Gardens">Piccadilly Gardens</option>
+                <option value="Oxford Road">Oxford Road</option>
             </select>
 
-            <label for="wager">Wager Amount:</label>
-            <input type="number" name="wager" placeholder="Wager Amount" required>
+            <label for="amount">Amount to Deposit:</label>
+            <input type="number" name="amount" placeholder="Amount" required>
 
-            <label for="result">Result:</label>
-            <select name="result">
-                <option value="win">Win</option>
-                <option value="lose">Lose</option>
-            </select>
-
-            <button type="submit">Submit Result</button>
+            <button type="submit">Deposit</button>
         </form>
 
-        <!-- Perform a Steal Form -->
-        <h2>Perform a Steal</h2>
-        <form action="/steal_challenge" method="POST">
-            <label for="winner_id">Select Winning Team:</label>
-            <select name="winner_id" required>
-                {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
-                {% endfor %}
-            </select>
-
-            <label for="loser_id">Select Losing Team:</label>
-            <select name="loser_id" required>
-                {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
-                {% endfor %}
-            </select>
-
-            <label for="percentage">Steal Percentage:</label>
-            <input type="number" name="percentage" placeholder="Steal Percentage" required>
-
-            <button type="submit">Steal</button>
-        </form>
-
-        <!-- Select Transit Method Form -->
-        <h2>Select Transit Method</h2>
-        <form action="/select_transit" method="POST">
-            <label for="team_id">Select Team:</label>
-            <select name="team_id" required>
-                {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
-                {% endfor %}
-            </select>
-
-            <label for="distance">Distance to Next Region (km):</label>
-            <input type="number" name="distance" placeholder="Distance in km" required>
-
-            <label for="transport_mode">Select Mode of Transport:</label>
-            <select name="transport_mode" required>
-                <option value="walking">Walking (Free, 5 km/h)</option>
-                <option value="bus">Bus (£10 per minute, 20 km/h)</option>
-                <option value="tram">Tram (£20 per minute, 30 km/h)</option>
-                <option value="train">Train (£30 per minute, 45 km/h)</option>
-                <option value="taxi">Taxi (£40 per minute, 40 km/h)</option>
-                <option value="uber">Uber (£50 per minute, 50 km/h)</option>
-            </select>
-
-            <button type="submit">Calculate Cost and Travel Time</button>
-        </form>
-
-        <!-- Add Daily Bonus Button -->
-        <h2>Add Daily Bonus</h2>
-        <a href="/add_day_bonus" class="btn">Add £1000 Bonus to All Teams</a>
-        <!-- Add Reset Teams Button -->
-        <h2>Reset Teams</h2>
-        <form action="/admin/reset-teams" method="POST">
-            <button type="submit" class="btn">Reset All Teams</button>
-        </form>
+        <!-- Region Status Link -->
+        <h2>View Region Status</h2>
+        <a href="/region_status">Check Region Ownership</a>
     </div>
-
 
 </body>
 </html>
