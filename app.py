@@ -6,6 +6,12 @@ import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for sessions and flash messages
 
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Ensure the database and tables are created
+    app.run(debug=True)
+
+
 # Setup database
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
