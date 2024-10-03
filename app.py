@@ -54,8 +54,7 @@ def index():
                 'team_deposits': {deposit.team.name: deposit.amount for deposit in deposits}
             }
 
-        challenges = Challenge.query.all()
-        return render_template('index.html', teams=teams, region_deposits=region_deposits, challenges=challenges)
+        return render_template('index.html', teams=teams, region_deposits=region_deposits)
     except Exception as e:
         app.logger.error(f"Error loading index page: {e}")
         flash(f"Error loading page: {e}")
@@ -80,23 +79,27 @@ def deposit():
         highest_deposit = max(existing_deposits, key=lambda d: d.amount, default=None)
         current_owner = highest_deposit.team if highest_deposit else None
 
-        # Check if the team can steal the region
-        if current_owner and current_owner.id != int(team_id) and amount <= highest_deposit.amount:
-            flash(f"To steal the region, you must deposit at least £{highest_deposit.amount + 1}.")
+        # Calculate the new total deposit for the current team
+        existing_deposit = Deposit.query.filter_by(team_id=team_id, region=region).first()
+        new_total_deposit = (existing_deposit.amount if existing_deposit else 0) + amount
+
+        # If another team owns the region, ensure the new total deposit is enough to win
+        if current_owner and current_owner.id != int(team_id) and new_total_deposit <= highest_deposit.amount:
+            flash(f"To steal the region, your total deposit must be more than £{highest_deposit.amount}. Your new total would be £{new_total_deposit}.")
             return redirect(url_for('index'))
 
-        # If the team already has a deposit in the region, update it
-        existing_deposit = Deposit.query.filter_by(team_id=team_id, region=region).first()
+        # Update or create the deposit for the team
         if existing_deposit:
             existing_deposit.amount += amount
         else:
             new_deposit = Deposit(region=region, team_id=team_id, amount=amount)
             db.session.add(new_deposit)
 
+        # Deduct the amount from the team's budget
         team.budget -= amount
         db.session.commit()
 
-        flash(f"£{amount} deposited in {region}. New budget: £{team.budget}.")
+        flash(f"£{amount} deposited in {region}. New total deposit: £{new_total_deposit}. New budget: £{team.budget}.")
         return redirect(url_for('index'))
     except Exception as e:
         flash(f"Error processing deposit: {e}")
@@ -116,18 +119,81 @@ def add_team():
 
 @app.route('/complete_challenge', methods=['POST'])
 def complete_challenge():
-    # Logic for completing a challenge
-    pass
+    try:
+        team_id = request.form['team_id']
+        challenge_id = request.form['challenge_id']
+        wager = float(request.form['wager'])
+        result = request.form['result']
+
+        team = Team.query.get(team_id)
+        challenge = Challenge.query.get(challenge_id)
+
+        multiplier = 1.5 if challenge.level == 'Easy' else 2 if challenge.level == 'Moderate' else 3
+
+        if result == 'win':
+            team.budget += wager * multiplier
+        else:
+            team.budget -= wager
+
+        db.session.commit()
+        flash(f'Challenge completed! New budget: £{team.budget}')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f"Error completing challenge: {e}")
+        return redirect(url_for('index'))
 
 @app.route('/steal_challenge', methods=['POST'])
 def steal_challenge():
-    # Logic for performing a steal
-    pass
+    try:
+        winner_id = request.form['winner_id']
+        loser_id = request.form['loser_id']
+        percentage = float(request.form['percentage'])
+
+        winner = Team.query.get(winner_id)
+        loser = Team.query.get(loser_id)
+
+        steal_amount = loser.budget * (percentage / 100)
+        winner.budget += steal_amount
+        loser.budget -= steal_amount
+
+        db.session.commit()
+        flash(f'Successfully stole {percentage}% of {loser.name}\'s budget! New budget: £{winner.budget}')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f"Error performing steal: {e}")
+        return redirect(url_for('index'))
 
 @app.route('/select_transit', methods=['POST'])
 def select_transit():
-    # Logic for selecting transit method
-    pass
+    try:
+        team_id = request.form['team_id']
+        distance = float(request.form['distance'])
+        transport_mode = request.form['transport_mode']
+
+        transport_data = {
+            'walking': {'speed': 5, 'cost_per_min': 0},
+            'bus': {'speed': 20, 'cost_per_min': 10},
+            'tram': {'speed': 30, 'cost_per_min': 20},
+            'train': {'speed': 45, 'cost_per_min': 30},
+            'taxi': {'speed': 40, 'cost_per_min': 40},
+            'uber': {'speed': 50, 'cost_per_min': 50}
+        }
+
+        speed = transport_data[transport_mode]['speed']
+        cost_per_min = transport_data[transport_mode]['cost_per_min']
+
+        travel_time = (distance / speed) * 60  # Convert to minutes
+        travel_cost = travel_time * cost_per_min
+
+        team = Team.query.get(team_id)
+        team.budget -= travel_cost
+
+        db.session.commit()
+        flash(f'Travel time: {travel_time:.2f} minutes. Cost: £{travel_cost:.2f}. New budget: £{team.budget:.2f}.')
+        return redirect(url_for('index'))
+    except Exception as e:
+        flash(f"Error selecting transit: {e}")
+        return redirect(url_for('index'))
 
 @app.route('/add_day_bonus')
 def add_day_bonus():
@@ -154,6 +220,6 @@ def reset_teams():
 with app.app_context():
     db.create_all()  # Create all tables based on models
 
-# Run the app
+# Run the app with debug mode enabled
 if __name__ == '__main__':
     app.run(debug=True)
