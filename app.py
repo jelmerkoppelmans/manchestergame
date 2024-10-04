@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 
 # Create Flask app
 app = Flask(__name__)
@@ -13,6 +15,18 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database
 db = SQLAlchemy(app)
+
+# Setup logging
+if not os.path.exists('logs'):
+    os.mkdir('logs')
+file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
+file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+file_handler.setLevel(logging.INFO)
+app.logger.addHandler(file_handler)
+app.logger.setLevel(logging.INFO)
+
+# Log application startup
+app.logger.info('App startup')
 
 # Models
 class Team(db.Model):
@@ -41,6 +55,7 @@ class Deposit(db.Model):
 def index():
     try:
         teams = Team.query.all()
+        challenges = Challenge.query.all()  # Query all challenges
         regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
         
         # Fetch deposit information for each region
@@ -54,7 +69,7 @@ def index():
                 'team_deposits': {deposit.team.name: deposit.amount for deposit in deposits}
             }
 
-        return render_template('index.html', teams=teams, region_deposits=region_deposits)
+        return render_template('index.html', teams=teams, region_deposits=region_deposits, challenges=challenges)
     except Exception as e:
         app.logger.error(f"Error loading index page: {e}")
         flash(f"Error loading page: {e}")
@@ -102,6 +117,7 @@ def deposit():
         flash(f"£{amount} deposited in {region}. New total deposit: £{new_total_deposit}. New budget: £{team.budget}.")
         return redirect(url_for('index'))
     except Exception as e:
+        app.logger.error(f"Error processing deposit: {e}")
         flash(f"Error processing deposit: {e}")
         return redirect(url_for('index'))
 
@@ -114,6 +130,7 @@ def add_team():
         db.session.commit()
         flash(f'Team {team_name} added successfully!')
     except Exception as e:
+        app.logger.error(f"Error adding team: {e}")
         flash(f"Error adding team: {e}")
     return redirect(url_for('index'))
 
@@ -139,6 +156,7 @@ def complete_challenge():
         flash(f'Challenge completed! New budget: £{team.budget}')
         return redirect(url_for('index'))
     except Exception as e:
+        app.logger.error(f"Error completing challenge: {e}")
         flash(f"Error completing challenge: {e}")
         return redirect(url_for('index'))
 
@@ -160,6 +178,7 @@ def steal_challenge():
         flash(f'Successfully stole {percentage}% of {loser.name}\'s budget! New budget: £{winner.budget}')
         return redirect(url_for('index'))
     except Exception as e:
+        app.logger.error(f"Error performing steal: {e}")
         flash(f"Error performing steal: {e}")
         return redirect(url_for('index'))
 
@@ -192,6 +211,7 @@ def select_transit():
         flash(f'Travel time: {travel_time:.2f} minutes. Cost: £{travel_cost:.2f}. New budget: £{team.budget:.2f}.')
         return redirect(url_for('index'))
     except Exception as e:
+        app.logger.error(f"Error selecting transit: {e}")
         flash(f"Error selecting transit: {e}")
         return redirect(url_for('index'))
 
@@ -213,6 +233,7 @@ def reset_teams():
         db.session.commit()
         flash('All teams have been reset.')
     except Exception as e:
+        app.logger.error(f"Error resetting teams: {e}")
         flash(f"Error resetting teams: {e}")
     return redirect(url_for('index'))
 
