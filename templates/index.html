@@ -21,6 +21,7 @@
                     <th>Region</th>
                     <th>Current Owner</th>
                     <th>Total Deposit</th>
+                    <th>Deposits by Team</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +30,13 @@
                     <td data-label="Region">{{ region }}</td>
                     <td data-label="Current Owner">{{ info.owner or 'None' }}</td>
                     <td data-label="Total Deposit">£{{ info.total }}</td>
+                    <td data-label="Deposits by Team">
+                        <ul>
+                            {% for team_name, amount in info.team_deposits.items() %}
+                            <li>{{ team_name }}: £{{ amount }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
