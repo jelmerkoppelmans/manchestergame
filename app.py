@@ -180,6 +180,7 @@ def complete_challenge():
 
         if result == 'win':
             team.budget += wager * multiplier
+            challenge_won = True
         else:
             team.budget -= wager
 
@@ -206,7 +207,7 @@ def complete_challenge():
     except Exception as e:
         app.logger.error(f"Error completing challenge: {e}")
         flash(f"Error completing challenge: {e}")
-        return redirect(url_for('index'))
+        return redirect(url_for('index', challenge_won=challenge_won))
 
 @app.route('/steal_challenge', methods=['POST'])
 def steal_challenge():

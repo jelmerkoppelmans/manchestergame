@@ -42,13 +42,6 @@
             </tbody>
         </table>
 
-        <!-- Add New Team Form -->
-        <h2>Add a New Team</h2>
-        <form action="/add_team" method="POST">
-            <input type="text" name="team_name" placeholder="Enter team name" required>
-            <button type="submit">Add Team</button>
-        </form>
-
         <!-- Complete a Challenge Form -->
         <h2>Complete a Challenge</h2>
         <form action="/complete_challenge" method="POST">
@@ -131,14 +124,25 @@
         <h2>Add Daily Bonus</h2>
         <a href="/add_day_bonus" class="btn">Add £1000 Bonus to All Teams</a>
 
+        <!-- Reset All Teams Button -->
+        <h2>Reset All Teams</h2>
+        <form action="/reset_teams" method="POST">
+            <button type="submit" class="btn">Reset All Teams and Deposits</button>
+        </form>
+
+        <!-- Add New Team Form -->
+        <h2>Add a New Team</h2>
+        <form action="/add_team" method="POST">
+            <input type="text" name="team_name" placeholder="Enter team name" required>
+            <button type="submit">Add Team</button>
+        </form>
+
     </div>
 
-    
-
-    <!-- Trigger confetti if region_won is true -->
+    <!-- Trigger confetti if region_won or challenge_won is true -->
     <script>
-        // Trigger confetti when the region is won
-        {% if region_won %}
+        // Trigger confetti when the region is won or a challenge is won
+        {% if region_won or request.args.get('challenge_won') %}
             confetti({
                 particleCount: 200,
                 spread: 70,
