@@ -61,6 +61,33 @@
             </tbody>
         </table>
 
+        <!-- Deposit Money Form to Claim a Region -->
+        <h2>Claim a Region</h2>
+        <form action="/deposit" method="POST">
+            <label for="team_id">Select Team:</label>
+            <select name="team_id" required>
+                {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                {% endfor %}
+            </select>
+
+            <label for="region">Select Region:</label>
+            <select name="region" required>
+                <option value="Northern Quarter">Northern Quarter</option>
+                <option value="Ancoats">Ancoats</option>
+                <option value="Spinningfields">Spinningfields</option>
+                <option value="Castlefield">Castlefield</option>
+                <option value="Deansgate">Deansgate</option>
+                <option value="Piccadilly Gardens">Piccadilly Gardens</option>
+                <option value="Oxford Road">Oxford Road</option>
+            </select>
+
+            <label for="amount">Deposit Amount (£):</label>
+            <input type="number" name="amount" placeholder="Deposit Amount" required>
+
+            <button type="submit">Deposit</button>
+        </form>
+
         <!-- Complete a Challenge Form -->
         <h2>Complete a Challenge</h2>
         <form action="/complete_challenge" method="POST">
