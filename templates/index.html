@@ -224,7 +224,12 @@
 
 <script>
     // Check if the region_won flag was passed from the backend
+    console.log("region_won: {{ region_won }}");
     {% if region_won %}
+
+    
+
+
         // Create a container for the fireworks
         const container = document.createElement('div');
         container.style.position = 'fixed';
