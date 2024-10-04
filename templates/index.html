@@ -6,6 +6,7 @@
     <title>Manchester Territory Game</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.8/dist/index.umd.min.js"></script>
 </head>
 <body>
 
@@ -221,48 +222,51 @@
     {% endif %}
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.8/dist/index.umd.min.js"></script>
+
 
 <script>
-    // Check if the region_won flag was passed from the backend
-    {% if region_won %}
-        // Create a container for the fireworks
-        const container = document.createElement('div');
-        container.style.position = 'fixed';
-        container.style.top = 0;
-        container.style.left = 0;
-        container.style.width = '100%';
-        container.style.height = '100%';
-        container.style.zIndex = 9999;  // Ensure it appears above other content
-        document.body.appendChild(container);
+    // Ensure this script runs after the DOM has loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if the region_won flag was passed from the backend
+        {% if region_won %}
+            // Create a container for the fireworks
+            const container = document.createElement('div');
+            container.style.position = 'fixed';
+            container.style.top = 0;
+            container.style.left = 0;
+            container.style.width = '100%';
+            container.style.height = '100%';
+            container.style.zIndex = 9999;  // Ensure it appears above other content
+            document.body.appendChild(container);
 
-        // Use the correct Fireworks.js initialization for UMD
-        const fireworks = fireworks.Fireworks({
-            target: container, // The container where fireworks will appear
-            hue: { min: 0, max: 360 },
-            rocketsPoint: 50, 
-            speed: 2,
-            acceleration: 1.05,
-            friction: 0.97,
-            gravity: 1.5,
-            particles: 50,
-            trace: 3,
-            explosion: 5,
-            autoresize: true,
-            boundaries: {
-                width: container.clientWidth,
-                height: container.clientHeight
-            },
-            brightness: { min: 50, max: 80 },
-            decay: { min: 0.015, max: 0.03 },
-        });
+            // Initialize Fireworks.js correctly for the UMD version
+            const fireworks = fireworks.Fireworks({
+                target: container, // The container where fireworks will appear
+                hue: { min: 0, max: 360 },
+                rocketsPoint: 50, 
+                speed: 2,
+                acceleration: 1.05,
+                friction: 0.97,
+                gravity: 1.5,
+                particles: 50,
+                trace: 3,
+                explosion: 5,
+                autoresize: true,
+                boundaries: {
+                    width: container.clientWidth,
+                    height: container.clientHeight
+                },
+                brightness: { min: 50, max: 80 },
+                decay: { min: 0.015, max: 0.03 },
+            });
 
-        // Start the fireworks
-        fireworks.start();
+            // Start the fireworks
+            fireworks.start();
 
-        // Stop the fireworks after 5 seconds
-        setTimeout(() => fireworks.stop(), 5000);
-    {% endif %}
+            // Stop the fireworks after 5 seconds
+            setTimeout(() => fireworks.stop(), 5000);
+        {% endif %}
+    });
 </script>
 
 
