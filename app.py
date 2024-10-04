@@ -121,18 +121,25 @@ def deposit():
         flash(f"Error processing deposit: {e}")
         return redirect(url_for('index'))
 
-@app.route('/challenges/<int:day>/<string:region>')
-def challenges(day, region):
+@app.route('/challenges')
+def challenges():
     try:
+        # Get day and region from query parameters
+        day = request.args.get('day')
+        region = request.args.get('region')
+
+        # Query challenges based on the day and region
         challenges = Challenge.query.filter_by(day=day, region=region).all()
         if not challenges:
             flash(f"No challenges found for Day {day} in {region}.")
             return redirect(url_for('index'))
+        
         return render_template('challenge.html', challenges=challenges, day=day, region=region)
     except Exception as e:
         app.logger.error(f"Error loading challenges for {region} on Day {day}: {e}")
         flash(f"Error loading challenges: {e}")
         return redirect(url_for('index'))
+
 
 @app.route('/complete_challenge', methods=['POST'])
 def complete_challenge():
