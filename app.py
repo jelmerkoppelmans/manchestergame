@@ -121,18 +121,18 @@ def deposit():
         flash(f"Error processing deposit: {e}")
         return redirect(url_for('index'))
 
-@app.route('/add_team', methods=['POST'])
-def add_team():
+@app.route('/challenges/<int:day>/<string:region>')
+def challenges(day, region):
     try:
-        team_name = request.form['team_name']
-        new_team = Team(name=team_name)
-        db.session.add(new_team)
-        db.session.commit()
-        flash(f'Team {team_name} added successfully!')
+        challenges = Challenge.query.filter_by(day=day, region=region).all()
+        if not challenges:
+            flash(f"No challenges found for Day {day} in {region}.")
+            return redirect(url_for('index'))
+        return render_template('challenge.html', challenges=challenges, day=day, region=region)
     except Exception as e:
-        app.logger.error(f"Error adding team: {e}")
-        flash(f"Error adding team: {e}")
-    return redirect(url_for('index'))
+        app.logger.error(f"Error loading challenges for {region} on Day {day}: {e}")
+        flash(f"Error loading challenges: {e}")
+        return redirect(url_for('index'))
 
 @app.route('/complete_challenge', methods=['POST'])
 def complete_challenge():
@@ -191,11 +191,11 @@ def select_transit():
 
         transport_data = {
             'walking': {'speed': 5, 'cost_per_min': 0},
-            'bus': {'speed': 20, 'cost_per_min': 10},
-            'tram': {'speed': 30, 'cost_per_min': 20},
-            'train': {'speed': 45, 'cost_per_min': 30},
-            'taxi': {'speed': 40, 'cost_per_min': 40},
-            'uber': {'speed': 50, 'cost_per_min': 50}
+            'bus': {'speed': 20, 'cost_per_min': 5},  # Half the original cost
+            'tram': {'speed': 30, 'cost_per_min': 10},  # Half the original cost
+            'train': {'speed': 45, 'cost_per_min': 15},  # Half the original cost
+            'taxi': {'speed': 40, 'cost_per_min': 20},  # Half the original cost
+            'uber': {'speed': 50, 'cost_per_min': 25}  # Half the original cost
         }
 
         speed = transport_data[transport_mode]['speed']
@@ -230,11 +230,15 @@ def reset_teams():
         teams = Team.query.all()
         for team in teams:
             team.budget = 2000.0  # Reset budget
+        
+        # Reset all deposits
+        db.session.query(Deposit).delete()
+        
         db.session.commit()
-        flash('All teams have been reset.')
+        flash('All teams and deposits have been reset.')
     except Exception as e:
-        app.logger.error(f"Error resetting teams: {e}")
-        flash(f"Error resetting teams: {e}")
+        app.logger.error(f"Error resetting teams and deposits: {e}")
+        flash(f"Error resetting teams and deposits: {e}")
     return redirect(url_for('index'))
 
 # Ensure database tables are created
