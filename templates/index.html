@@ -235,8 +235,8 @@
         container.style.zIndex = 9999;  // Ensure it appears above other content
         document.body.appendChild(container);
 
-        // Initialize Fireworks.js correctly
-        const fireworks = new Fireworks({
+        // Use the correct Fireworks.js v2.x initialization
+        const fireworks = Fireworks({
             target: container, // The container where fireworks will appear
             hue: { min: 0, max: 360 },
             rocketsPoint: 50, 
@@ -259,7 +259,7 @@
         // Start the fireworks
         fireworks.start();
 
-        // Run the fireworks for 5 seconds and then stop
+        // Stop the fireworks after 5 seconds
         setTimeout(() => fireworks.stop(), 5000);
     {% endif %}
 </script>
