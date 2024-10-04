@@ -224,12 +224,7 @@
 
 <script>
     // Check if the region_won flag was passed from the backend
-    console.log("region_won: {{ region_won }}");
     {% if region_won %}
-
-    
-
-
         // Create a container for the fireworks
         const container = document.createElement('div');
         container.style.position = 'fixed';
@@ -237,44 +232,28 @@
         container.style.left = 0;
         container.style.width = '100%';
         container.style.height = '100%';
+        container.style.zIndex = 9999;  // Ensure it appears above other content
         document.body.appendChild(container);
 
-        // Initialize the fireworks
-        const fireworks = fireworks.default(container, {
-            autoresize: true,
-            opacity: 0.5,
+        // Initialize Fireworks.js correctly
+        const fireworks = new Fireworks({
+            target: container, // The container where fireworks will appear
+            hue: { min: 0, max: 360 },
+            rocketsPoint: 50, 
+            speed: 2,
             acceleration: 1.05,
             friction: 0.97,
             gravity: 1.5,
             particles: 50,
             trace: 3,
             explosion: 5,
+            autoresize: true,
             boundaries: {
-                x: 0,
-                y: 0,
                 width: container.clientWidth,
                 height: container.clientHeight
             },
-            sound: {
-                enabled: true,
-                files: [
-                    'explosion0.mp3',
-                    'explosion1.mp3',
-                    'explosion2.mp3'
-                ],
-                volume: {
-                    min: 4,
-                    max: 8
-                }
-            },
-            brightness: {
-                min: 50,
-                max: 80,
-                decay: {
-                    min: 0.03,
-                    max: 0.05
-                }
-            }
+            brightness: { min: 50, max: 80 },
+            decay: { min: 0.015, max: 0.03 },
         });
 
         // Start the fireworks
@@ -284,6 +263,7 @@
         setTimeout(() => fireworks.stop(), 5000);
     {% endif %}
 </script>
+
 
 
 
