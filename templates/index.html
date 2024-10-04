@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manchester Territory Game</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Include the canvas-confetti library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
@@ -12,113 +13,32 @@
     <div class="container">
         <h1>Manchester Territory Game</h1>
 
-        <!-- Teams List -->
-        <h2>Teams</h2>
-        <ul>
-            {% for team in teams %}
-            <li>ID: {{ team.id }} - {{ team.name }} - Budget: £{{ team.budget }}</li>
-            {% endfor %}
-        </ul>
-
-        <!-- Flash messages -->
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul class="flash-messages">
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-
-        <!-- Region Ownership and Deposit Summary -->
+        <!-- Region Status Table -->
         <h2>Region Status</h2>
         <table>
             <thead>
                 <tr>
                     <th>Region</th>
-                    <th>Total Deposited</th>
                     <th>Current Owner</th>
-                    <th>Team Deposits</th>
+                    <th>Total Deposit</th>
                 </tr>
             </thead>
             <tbody>
-                {% for region, data in region_deposits.items() %}
+                {% for region, info in region_deposits.items() %}
                 <tr>
-                    <td>{{ region }}</td>
-                    <td>£{{ data.total }}</td>
-                    <td>{{ data.owner if data.owner else "None" }}</td>
-                    <td>
-                        <table border="1">
-                            <thead>
-                                <tr>
-                                    <th>Team</th>
-                                    <th>Amount Deposited (£)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for team_name, amount in data.team_deposits.items() %}
-                                <tr>
-                                    <td>{{ team_name }}</td>
-                                    <td>£{{ amount }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </td>
+                    <td data-label="Region">{{ region }}</td>
+                    <td data-label="Current Owner">{{ info.owner or 'None' }}</td>
+                    <td data-label="Total Deposit">£{{ info.total }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <!-- Deposit Money Form -->
-        <h2>Deposit Money into a Region</h2>
-        <form action="/deposit" method="POST">
-            <label for="team_id">Select Team:</label>
-            <select name="team_id" required>
-                {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
-                {% endfor %}
-            </select>
-
-            <label for="region">Select Region:</label>
-            <select name="region" required>
-                <option value="Northern Quarter">Northern Quarter</option>
-                <option value="Ancoats">Ancoats</option>
-                <option value="Spinningfields">Spinningfields</option>
-                <option value="Castlefield">Castlefield</option>
-                <option value="Deansgate">Deansgate</option>
-                <option value="Piccadilly Gardens">Piccadilly Gardens</option>
-                <option value="Oxford Road">Oxford Road</option>
-            </select>
-
-            <label for="amount">Deposit Amount (£):</label>
-            <input type="number" name="amount" placeholder="Amount" required>
-
-            <button type="submit">Deposit</button>
-        </form>
-
-        <!-- View Challenges -->
-        <h2>View Challenges by Region and Day</h2>
-        <form action="/challenges" method="GET">
-            <label for="day">Select Day:</label>
-            <select name="day" required>
-                <option value="1">Day 1</option>
-                <option value="2">Day 2</option>
-            </select>
-
-            <label for="region">Select Region:</label>
-            <select name="region" required>
-                <option value="Northern Quarter">Northern Quarter</option>
-                <option value="Ancoats">Ancoats</option>
-                <option value="Spinningfields">Spinningfields</option>
-                <option value="Castlefield">Castlefield</option>
-                <option value="Deansgate">Deansgate</option>
-                <option value="Piccadilly Gardens">Piccadilly Gardens</option>
-                <option value="Oxford Road">Oxford Road</option>
-            </select>
-
-            <button type="submit">View Challenges</button>
+        <!-- Add New Team Form -->
+        <h2>Add a New Team</h2>
+        <form action="/add_team" method="POST">
+            <input type="text" name="team_name" placeholder="Enter team name" required>
+            <button type="submit">Add Team</button>
         </form>
 
         <!-- Complete a Challenge Form -->
@@ -189,11 +109,11 @@
             <label for="transport_mode">Select Mode of Transport:</label>
             <select name="transport_mode" required>
                 <option value="walking">Walking (Free, 5 km/h)</option>
-                <option value="bus">Bus (£5 per minute, 20 km/h)</option>
-                <option value="tram">Tram (£10 per minute, 30 km/h)</option>
-                <option value="train">Train (£15 per minute, 45 km/h)</option>
-                <option value="taxi">Taxi (£20 per minute, 40 km/h)</option>
-                <option value="uber">Uber (£25 per minute, 50 km/h)</option>
+                <option value="bus">Bus (£10 per minute, 20 km/h)</option>
+                <option value="tram">Tram (£20 per minute, 30 km/h)</option>
+                <option value="train">Train (£30 per minute, 45 km/h)</option>
+                <option value="taxi">Taxi (£40 per minute, 40 km/h)</option>
+                <option value="uber">Uber (£50 per minute, 50 km/h)</option>
             </select>
 
             <button type="submit">Calculate Cost and Travel Time</button>
@@ -203,41 +123,21 @@
         <h2>Add Daily Bonus</h2>
         <a href="/add_day_bonus" class="btn">Add £1000 Bonus to All Teams</a>
 
-        <!-- Reset Teams Button -->
-        <h2>Reset Teams</h2>
-        <form action="/admin/reset-teams" method="POST">
-            <button type="submit" class="btn">Reset All Teams</button>
-        </form>
-
     </div>
-<script>
-    // Check if the success flag was passed from the backend
-    {% if success %}
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 }
-        });
-    {% endif %}
-</script>
 
+    
 
-
-<script>
-    // Trigger confetti when the region is won
-    {% if region_won %}
-        // Use the confetti function to create a burst of confetti
-        confetti({
-            particleCount: 200,  // Number of confetti pieces
-            spread: 70,          // Spread angle for confetti
-            origin: { y: 0.6 }   // Adjust starting point (y = height)
-        });
-    {% endif %}
-</script>
-
-
-
-
+    <!-- Trigger confetti if region_won is true -->
+    <script>
+        // Trigger confetti when the region is won
+        {% if region_won %}
+            confetti({
+                particleCount: 200,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        {% endif %}
+    </script>
 
 </body>
 </html>
