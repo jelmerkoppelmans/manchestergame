@@ -6,7 +6,6 @@
     <title>Manchester Territory Game</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.8/dist/index.umd.min.js"></script>
 </head>
 <body>
 
@@ -222,6 +221,8 @@
     {% endif %}
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.8/dist/index.umd.min.js"></script>
+
 <script>
     // Check if the region_won flag was passed from the backend
     {% if region_won %}
@@ -235,8 +236,8 @@
         container.style.zIndex = 9999;  // Ensure it appears above other content
         document.body.appendChild(container);
 
-        // Use the correct Fireworks.js v2.x initialization
-        const fireworks = Fireworks({
+        // Use the correct Fireworks.js initialization for UMD
+        const fireworks = fireworks.Fireworks({
             target: container, // The container where fireworks will appear
             hue: { min: 0, max: 360 },
             rocketsPoint: 50, 
@@ -263,6 +264,7 @@
         setTimeout(() => fireworks.stop(), 5000);
     {% endif %}
 </script>
+
 
 
 
