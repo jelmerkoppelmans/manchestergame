@@ -225,9 +225,11 @@
 <script>
     // Check if the region_won flag was passed from the backend
     {% if region_won %}
+        // Create a container for the fireworks
         const container = document.createElement('div');
         document.body.appendChild(container);
 
+        // Configure and start the fireworks
         const fireworks = new Fireworks(container, { 
             hue: { min: 0, max: 360 },
             delay: { min: 15, max: 30 },
@@ -242,15 +244,17 @@
             autoresize: true,
             brightness: { min: 50, max: 80 },
             decay: { min: 0.015, max: 0.03 },
-            mouse: { click: false, move: false, max: 1 },
-            boundaries: { x: 50, y: 50, width: window.innerWidth, height: window.innerHeight }
+            boundaries: { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight }
         });
 
+        // Start the fireworks
         fireworks.start();
 
-        setTimeout(() => fireworks.stop(), 5000);  // Run fireworks for 5 seconds
+        // Run the fireworks for 5 seconds and then stop
+        setTimeout(() => fireworks.stop(), 5000);
     {% endif %}
 </script>
+
 
 
 </body>

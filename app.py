@@ -82,6 +82,7 @@ def deposit():
         region = request.form['region']
         amount = float(request.form['amount'])
 
+        # Get the team from the database
         team = Team.query.get(team_id)
         if team.budget < amount:
             flash(f"Not enough budget to deposit £{amount}. Current budget: £{team.budget}.")
@@ -89,8 +90,8 @@ def deposit():
 
         # Get existing deposits for this region
         existing_deposits = Deposit.query.filter_by(region=region).all()
-        
-        # Find the current owner if any
+
+        # Find the current owner, if any
         highest_deposit = max(existing_deposits, key=lambda d: d.amount, default=None)
         current_owner = highest_deposit.team if highest_deposit else None
 
@@ -118,22 +119,23 @@ def deposit():
         if not current_owner or new_total_deposit > highest_deposit.amount:
             flash(f"Congratulations! You now own the region: {region}")
 
-            # Pass the required context variables when rendering the index page
+            # Fetch required context data
             teams = Team.query.all()
             challenges = Challenge.query.all()
             regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
 
             # Fetch deposit information for each region
             region_deposits = {}
-            for region in regions:
-                deposits = Deposit.query.filter_by(region=region).all()
+            for reg in regions:
+                deposits = Deposit.query.filter_by(region=reg).all()
                 highest_deposit = max(deposits, key=lambda d: d.amount, default=None)
-                region_deposits[region] = {
+                region_deposits[reg] = {
                     'total': sum(d.amount for d in deposits),
                     'owner': highest_deposit.team.name if highest_deposit else None,
                     'team_deposits': {deposit.team.name: deposit.amount for deposit in deposits}
                 }
 
+            # Render the template and pass the region_won flag to trigger fireworks
             return render_template('index.html', teams=teams, region_deposits=region_deposits, challenges=challenges, region_won=True)
         else:
             flash(f"£{amount} deposited in {region}. New total deposit: £{new_total_deposit}. New budget: £{team.budget}.")
