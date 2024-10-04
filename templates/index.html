@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manchester Territory Game</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@1.2.5/dist/fireworks.js"></script>
+
 </head>
 <body>
 
@@ -209,6 +212,46 @@
         </form>
 
     </div>
+<script>
+    // Check if the success flag was passed from the backend
+    {% if success %}
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    {% endif %}
+</script>
+<script>
+    // Check if the region_won flag was passed from the backend
+    {% if region_won %}
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+
+        const fireworks = new Fireworks(container, { 
+            hue: { min: 0, max: 360 },
+            delay: { min: 15, max: 30 },
+            rocketsPoint: 50, 
+            speed: 2,
+            acceleration: 1.05,
+            friction: 0.95,
+            gravity: 1.5,
+            particles: 50,
+            trace: 3,
+            explosion: 5,
+            autoresize: true,
+            brightness: { min: 50, max: 80 },
+            decay: { min: 0.015, max: 0.03 },
+            mouse: { click: false, move: false, max: 1 },
+            boundaries: { x: 50, y: 50, width: window.innerWidth, height: window.innerHeight }
+        });
+
+        fireworks.start();
+
+        setTimeout(() => fireworks.stop(), 5000);  // Run fireworks for 5 seconds
+    {% endif %}
+</script>
+
 
 </body>
 </html>

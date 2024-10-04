@@ -114,8 +114,13 @@ def deposit():
         team.budget -= amount
         db.session.commit()
 
-        flash(f"£{amount} deposited in {region}. New total deposit: £{new_total_deposit}. New budget: £{team.budget}.")
-        return redirect(url_for('index'))
+        # Check if the team now owns the region
+        if not current_owner or new_total_deposit > highest_deposit.amount:
+            flash(f"Congratulations! You now own the region: {region}")
+            return render_template('index.html', region_won=True)  # Pass a flag to the frontend
+        else:
+            flash(f"£{amount} deposited in {region}. New total deposit: £{new_total_deposit}. New budget: £{team.budget}.")
+            return redirect(url_for('index'))
     except Exception as e:
         app.logger.error(f"Error processing deposit: {e}")
         flash(f"Error processing deposit: {e}")
@@ -156,12 +161,14 @@ def complete_challenge():
 
         if result == 'win':
             team.budget += wager * multiplier
+            db.session.commit()
+            flash(f'Challenge completed! New budget: £{team.budget}')
+            return render_template('index.html', success=True)  # Pass a flag to the frontend
         else:
             team.budget -= wager
-
-        db.session.commit()
-        flash(f'Challenge completed! New budget: £{team.budget}')
-        return redirect(url_for('index'))
+            db.session.commit()
+            flash(f'Challenge failed! New budget: £{team.budget}')
+            return redirect(url_for('index'))
     except Exception as e:
         app.logger.error(f"Error completing challenge: {e}")
         flash(f"Error completing challenge: {e}")
