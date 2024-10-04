@@ -6,7 +6,6 @@
     <title>Manchester Territory Game</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.8/dist/index.umd.min.js"></script>
 </head>
 <body>
 
@@ -225,48 +224,15 @@
 
 
 <script>
-    // Ensure this script runs after the DOM has loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        // Check if the region_won flag was passed from the backend
-        {% if region_won %}
-            // Create a container for the fireworks
-            const container = document.createElement('div');
-            container.style.position = 'fixed';
-            container.style.top = 0;
-            container.style.left = 0;
-            container.style.width = '100%';
-            container.style.height = '100%';
-            container.style.zIndex = 9999;  // Ensure it appears above other content
-            document.body.appendChild(container);
-
-            // Initialize Fireworks.js correctly for the UMD version
-            const fireworks = fireworks.Fireworks({
-                target: container, // The container where fireworks will appear
-                hue: { min: 0, max: 360 },
-                rocketsPoint: 50, 
-                speed: 2,
-                acceleration: 1.05,
-                friction: 0.97,
-                gravity: 1.5,
-                particles: 50,
-                trace: 3,
-                explosion: 5,
-                autoresize: true,
-                boundaries: {
-                    width: container.clientWidth,
-                    height: container.clientHeight
-                },
-                brightness: { min: 50, max: 80 },
-                decay: { min: 0.015, max: 0.03 },
-            });
-
-            // Start the fireworks
-            fireworks.start();
-
-            // Stop the fireworks after 5 seconds
-            setTimeout(() => fireworks.stop(), 5000);
-        {% endif %}
-    });
+    // Trigger confetti when the region is won
+    {% if region_won %}
+        // Use the confetti function to create a burst of confetti
+        confetti({
+            particleCount: 200,  // Number of confetti pieces
+            spread: 70,          // Spread angle for confetti
+            origin: { y: 0.6 }   // Adjust starting point (y = height)
+        });
+    {% endif %}
 </script>
 
 
