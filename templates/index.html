@@ -13,6 +13,25 @@
     <div class="container">
         <h1>Manchester Territory Game</h1>
 
+        <!-- Team Budgets Display -->
+        <h2>Team Budgets</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Team Name</th>
+                    <th>Budget (£)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                <tr>
+                    <td>{{ team.name }}</td>
+                    <td>£{{ team.budget }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <!-- Region Status Table -->
         <h2>Region Status</h2>
         <table>
