@@ -117,7 +117,24 @@ def deposit():
         # Check if the team now owns the region
         if not current_owner or new_total_deposit > highest_deposit.amount:
             flash(f"Congratulations! You now own the region: {region}")
-            return render_template('index.html', region_won=True)  # Pass a flag to the frontend
+
+            # Pass the required context variables when rendering the index page
+            teams = Team.query.all()
+            challenges = Challenge.query.all()
+            regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
+
+            # Fetch deposit information for each region
+            region_deposits = {}
+            for region in regions:
+                deposits = Deposit.query.filter_by(region=region).all()
+                highest_deposit = max(deposits, key=lambda d: d.amount, default=None)
+                region_deposits[region] = {
+                    'total': sum(d.amount for d in deposits),
+                    'owner': highest_deposit.team.name if highest_deposit else None,
+                    'team_deposits': {deposit.team.name: deposit.amount for deposit in deposits}
+                }
+
+            return render_template('index.html', teams=teams, region_deposits=region_deposits, challenges=challenges, region_won=True)
         else:
             flash(f"£{amount} deposited in {region}. New total deposit: £{new_total_deposit}. New budget: £{team.budget}.")
             return redirect(url_for('index'))
