@@ -161,14 +161,29 @@ def complete_challenge():
 
         if result == 'win':
             team.budget += wager * multiplier
-            db.session.commit()
-            flash(f'Challenge completed! New budget: £{team.budget}')
-            return render_template('index.html', success=True)  # Pass a flag to the frontend
         else:
             team.budget -= wager
-            db.session.commit()
-            flash(f'Challenge failed! New budget: £{team.budget}')
-            return redirect(url_for('index'))
+
+        db.session.commit()
+        flash(f'Challenge completed! New budget: £{team.budget}')
+
+        # Pass the required context variables when rendering the index page
+        teams = Team.query.all()
+        challenges = Challenge.query.all()
+        regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
+
+        # Fetch deposit information for each region
+        region_deposits = {}
+        for region in regions:
+            deposits = Deposit.query.filter_by(region=region).all()
+            highest_deposit = max(deposits, key=lambda d: d.amount, default=None)
+            region_deposits[region] = {
+                'total': sum(d.amount for d in deposits),
+                'owner': highest_deposit.team.name if highest_deposit else None,
+                'team_deposits': {deposit.team.name: deposit.amount for deposit in deposits}
+            }
+
+        return render_template('index.html', teams=teams, region_deposits=region_deposits, challenges=challenges, success=True)
     except Exception as e:
         app.logger.error(f"Error completing challenge: {e}")
         flash(f"Error completing challenge: {e}")
