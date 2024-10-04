@@ -273,23 +273,28 @@ def add_day_bonus():
     flash('£1000 bonus added to all teams!')
     return redirect(url_for('index'))
 
-@app.route('/admin/reset-teams', methods=['POST'])
+# The reset-teams route
+@app.route('/admin/reset_teams', methods=['POST'])
 def reset_teams():
     try:
+        # Reset each team's budget to 2000.0
         teams = Team.query.all()
         for team in teams:
-            team.budget = 2000.0  # Reset budget
+            team.budget = 2000.0
         
-        # Reset all deposits
-        db.session.query(Deposit).delete()
-        
-        db.session.commit()
-        flash('All teams and deposits have been reset.')
-    except Exception as e:
-        app.logger.error(f"Error resetting teams and deposits: {e}")
-        flash(f"Error resetting teams and deposits: {e}")
-    return redirect(url_for('index'))
+        # Remove all existing deposits
+        Deposit.query.delete()
 
+        # Commit the changes
+        db.session.commit()
+
+        flash('All teams and deposits have been reset.', 'success')
+    except Exception as e:
+        db.session.rollback()  # Rollback in case of an error
+        app.logger.error(f"Error resetting teams and deposits: {e}")
+        flash(f"Error resetting teams and deposits: {e}", 'danger')
+    
+    return redirect(url_for('index'))
 # Ensure database tables are created
 with app.app_context():
     db.create_all()  # Create all tables based on models
