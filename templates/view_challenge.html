@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenges for Day {{ day }} - {{ region }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Challenges for Day {{ day }} - {{ region }}</h1>
+        <ul>
+            {% for challenge in challenges %}
+                <li>
+                    <strong>{{ challenge.challenge_name }}</strong><br>
+                    {{ challenge.description }}<br>
+                    <em>Level: {{ challenge.level }}</em>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('index') }}">Back to Home</a>
+    </div>
+</body>
+</html>

@@ -137,6 +137,12 @@
             <label for="percentage">Steal Percentage:</label>
             <input type="number" name="percentage" placeholder="Steal Percentage" required>
 
+            <label for="success">Was the steal successful?</label>
+            <select name="success" required>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+
             <button type="submit">Steal</button>
         </form>
 
@@ -187,7 +193,6 @@
 
     <!-- Trigger confetti if region_won or challenge_won is true -->
     <script>
-        // Trigger confetti when the region is won or a challenge is won
         {% if region_won or request.args.get('challenge_won') %}
             confetti({
                 particleCount: 200,
