@@ -60,8 +60,24 @@
             </tbody>
         </table>
 
-        <!-- Challenge Table Display -->
+        <!-- Challenge Table Display with Day and Region Filter -->
         <h2>Challenges</h2>
+        <form action="{{ url_for('index') }}" method="get">
+            <label for="day">Select Day:</label>
+            <select name="day" id="day" onchange="this.form.submit()">
+                <option value="1" {% if selected_day == 1 %}selected{% endif %}>Day 1</option>
+                <option value="2" {% if selected_day == 2 %}selected{% endif %}>Day 2</option>
+            </select>
+
+            <label for="region">Select Region:</label>
+            <select name="region" id="region" onchange="this.form.submit()">
+                <option value="">All Regions</option>
+                {% for region in regions %}
+                <option value="{{ region }}" {% if selected_region == region %}selected{% endif %}>{{ region }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
         <table>
             <thead>
                 <tr>
@@ -78,7 +94,6 @@
                     <td>
                         <!-- Link to view_challenge template to show the challenge description -->
                         <a href="{{ url_for('view_challenge', challenge_id=challenge.id) }}">{{ challenge.challenge_name }}</a>
-                            {{ challenge.challenge_name }}
                         </a>
                     </td>
                     <td>{{ challenge.region }}</td>

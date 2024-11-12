@@ -54,9 +54,22 @@ class Deposit(db.Model):
 @app.route('/')
 def index():
     try:
+        selected_day = request.args.get('day')
+        selected_region = request.args.get('region')
+
+        # Fetch teams and regions
         teams = Team.query.all()
-        challenges = Challenge.query.all()
-        regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
+        days = sorted(set(ch.day for ch in Challenge.query.all()))
+        regions = sorted(set(ch.region for ch in Challenge.query.all()))
+
+        # Filter challenges based on selected day and region, if any
+        challenge_query = Challenge.query
+        if selected_day:
+            challenge_query = challenge_query.filter_by(day=int(selected_day))
+        if selected_region:
+            challenge_query = challenge_query.filter_by(region=selected_region)
+
+        challenges = challenge_query.all()
 
         # Fetch deposit information for each region
         region_deposits = {}
@@ -69,11 +82,21 @@ def index():
                 'team_deposits': {deposit.team.name: deposit.amount for deposit in deposits}
             }
 
-        return render_template('index.html', teams=teams, region_deposits=region_deposits, challenges=challenges)
+        return render_template(
+            'index.html',
+            teams=teams,
+            region_deposits=region_deposits,
+            challenges=challenges,
+            regions=regions,
+            days=days,
+            selected_day=selected_day,
+            selected_region=selected_region
+        )
     except Exception as e:
         app.logger.error(f"Error loading index page: {e}")
         flash(f"Error loading page: {e}")
         return redirect(url_for('index'))
+
 
 @app.route('/challenges')
 def challenges():
