@@ -3,23 +3,22 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from flask_migrate import Migrate 
+from flask_migrate import Migrate
 
-
+# Initialize the app and configure database
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# Database configuration
+# Set database path and initialize configurations
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize database
+# Initialize database and migrations
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-
-# Logging configuration
+# Set up logging
 if not os.path.exists('logs'):
     os.mkdir('logs')
 file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
@@ -42,7 +41,7 @@ class Challenge(db.Model):
     challenge_name = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
     level = db.Column(db.String(20), nullable=False)
-    steal_percentage = db.Column(db.Integer, default=0) 
+    steal_percentage = db.Column(db.Integer, default=0)
 
 class Deposit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -81,7 +80,6 @@ def challenges():
     try:
         day = request.args.get('day')
         region = request.args.get('region')
-
         challenges = Challenge.query.filter_by(day=day, region=region).all()
         if not challenges:
             flash(f"No challenges found for Day {day} in {region}.")
@@ -108,7 +106,6 @@ def deposit():
         existing_deposits = Deposit.query.filter_by(region=region).all()
         highest_deposit = max(existing_deposits, key=lambda d: d.amount, default=None)
         current_owner = highest_deposit.team if highest_deposit else None
-
         existing_deposit = Deposit.query.filter_by(team_id=team_id, region=region).first()
         new_total_deposit = (existing_deposit.amount if existing_deposit else 0) + amount
 
@@ -258,10 +255,15 @@ def select_transit():
 @app.route('/add_day_bonus')
 def add_day_bonus():
     teams = Team.query.all()
-    for team in teams:
-        team.budget += 1000
-    db.session.commit()
-    flash('£1000 bonus added to all teams!')
+    try:
+        teams = Team.query.all()
+        for team in teams:
+            team.budget += 1000
+        db.session.commit()
+        flash('£1000 bonus added to all teams!')
+    except Exception as e:
+        app.logger.error(f"Error adding day bonus: {e}")
+        flash(f"Error adding day bonus: {e}")
     return redirect(url_for('index'))
 
 @app.route('/admin/reset_teams', methods=['POST'])
@@ -279,6 +281,7 @@ def reset_teams():
         flash(f"Error resetting teams and deposits: {e}", 'danger')
     return redirect(url_for('index'))
 
+# Initialize database tables if they don't exist
 with app.app_context():
     db.create_all()
 
