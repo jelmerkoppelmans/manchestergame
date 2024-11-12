@@ -91,6 +91,17 @@ def challenges():
         flash(f"Error loading challenges: {e}")
         return redirect(url_for('index'))
 
+@app.route('/view_challenge/<int:challenge_id>')
+def view_challenge(challenge_id):
+    try:
+        challenge = Challenge.query.get_or_404(challenge_id)
+        return render_template('view_challenge.html', challenge=challenge)
+    except Exception as e:
+        app.logger.error(f"Error loading challenge with ID {challenge_id}: {e}")
+        flash(f"Error loading challenge: {e}")
+        return redirect(url_for('index'))
+
+
 @app.route('/deposit', methods=['POST'])
 def deposit():
     try:
@@ -197,7 +208,7 @@ def steal_challenge():
         winner_id = request.form['winner_id']
         loser_id = request.form['loser_id']
         challenge_id = request.form['challenge_id']
-        success = request.form['success']  # Whether the steal was successful
+        success = request.form['success']
 
         winner = Team.query.get(winner_id)
         loser = Team.query.get(loser_id)
@@ -237,7 +248,6 @@ def select_transit():
 
         speed = transport_data[transport_mode]['speed']
         cost_per_min = transport_data[transport_mode]['cost_per_min']
-
         travel_time = (distance / speed) * 60
         travel_cost = travel_time * cost_per_min
 
@@ -254,7 +264,6 @@ def select_transit():
 
 @app.route('/add_day_bonus')
 def add_day_bonus():
-    teams = Team.query.all()
     try:
         teams = Team.query.all()
         for team in teams:
