@@ -275,6 +275,26 @@ def add_day_bonus():
         flash(f"Error adding day bonus: {e}")
     return redirect(url_for('index'))
 
+@app.route('/add_team', methods=['POST'])
+def add_team():
+    try:
+        team_name = request.form['team_name']
+        if not team_name:
+            flash("Team name cannot be empty.", "danger")
+            return redirect(url_for('index'))
+        
+        new_team = Team(name=team_name)
+        db.session.add(new_team)
+        db.session.commit()
+        
+        flash(f'Team "{team_name}" added successfully!', "success")
+        return redirect(url_for('index'))
+    except Exception as e:
+        app.logger.error(f"Error adding team: {e}")
+        flash(f"Error adding team: {e}", "danger")
+        return redirect(url_for('index'))
+
+
 @app.route('/admin/reset_teams', methods=['POST'])
 def reset_teams():
     try:
