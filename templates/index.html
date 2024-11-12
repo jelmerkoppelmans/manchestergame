@@ -77,7 +77,7 @@
                 <tr>
                     <td>
                         <!-- Link to view_challenge template to show the challenge description -->
-                        <a href="{{ url_for('view_challenge', challenge_id=challenge.id) }}">
+                        <a href="{{ url_for('view_challenge', challenge_id=challenge.id) }}">{{ challenge.challenge_name }}</a>
                             {{ challenge.challenge_name }}
                         </a>
                     </td>
