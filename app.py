@@ -4,11 +4,10 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 
-# Create Flask app
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Required for sessions and flash messages
+app.secret_key = 'your_secret_key'
 
-# Setup database
+# Database configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -16,7 +15,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize database
 db = SQLAlchemy(app)
 
-# Setup logging
+# Logging configuration
 if not os.path.exists('logs'):
     os.mkdir('logs')
 file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
@@ -24,8 +23,6 @@ file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(messag
 file_handler.setLevel(logging.INFO)
 app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
-
-# Log application startup
 app.logger.info('App startup')
 
 # Models
@@ -41,13 +38,13 @@ class Challenge(db.Model):
     challenge_name = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
     level = db.Column(db.String(20), nullable=False)
+    steal_percentage = db.Column(db.Float, default=0.0)
 
 class Deposit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     region = db.Column(db.String(100), nullable=False)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     amount = db.Column(db.Float, default=0)
-
     team = db.relationship('Team', backref=db.backref('deposits', lazy=True))
 
 # Routes
@@ -55,9 +52,9 @@ class Deposit(db.Model):
 def index():
     try:
         teams = Team.query.all()
-        challenges = Challenge.query.all()  # Query all challenges
+        challenges = Challenge.query.all()
         regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
-        
+
         # Fetch deposit information for each region
         region_deposits = {}
         for region in regions:
@@ -75,56 +72,63 @@ def index():
         flash(f"Error loading page: {e}")
         return redirect(url_for('index'))
 
+@app.route('/challenges')
+def challenges():
+    try:
+        day = request.args.get('day')
+        region = request.args.get('region')
+
+        challenges = Challenge.query.filter_by(day=day, region=region).all()
+        if not challenges:
+            flash(f"No challenges found for Day {day} in {region}.")
+            return redirect(url_for('index'))
+
+        return render_template('view_challenge.html', challenges=challenges, day=day, region=region)
+    except Exception as e:
+        app.logger.error(f"Error loading challenges for {region} on Day {day}: {e}")
+        flash(f"Error loading challenges: {e}")
+        return redirect(url_for('index'))
+
 @app.route('/deposit', methods=['POST'])
 def deposit():
     try:
         team_id = request.form['team_id']
         region = request.form['region']
         amount = float(request.form['amount'])
-
-        # Get the team from the database
         team = Team.query.get(team_id)
+
         if team.budget < amount:
             flash(f"Not enough budget to deposit £{amount}. Current budget: £{team.budget}.")
             return redirect(url_for('index'))
 
-        # Get existing deposits for this region
         existing_deposits = Deposit.query.filter_by(region=region).all()
-
-        # Find the current owner, if any
         highest_deposit = max(existing_deposits, key=lambda d: d.amount, default=None)
         current_owner = highest_deposit.team if highest_deposit else None
 
-        # Calculate the new total deposit for the current team
         existing_deposit = Deposit.query.filter_by(team_id=team_id, region=region).first()
         new_total_deposit = (existing_deposit.amount if existing_deposit else 0) + amount
 
-        # If another team owns the region, ensure the new total deposit is enough to win
         if current_owner and current_owner.id != int(team_id) and new_total_deposit <= highest_deposit.amount:
             flash(f"To steal the region, your total deposit must be more than £{highest_deposit.amount}. Your new total would be £{new_total_deposit}.")
             return redirect(url_for('index'))
 
-        # Update or create the deposit for the team
         if existing_deposit:
             existing_deposit.amount += amount
         else:
             new_deposit = Deposit(region=region, team_id=team_id, amount=amount)
             db.session.add(new_deposit)
 
-        # Deduct the amount from the team's budget
         team.budget -= amount
         db.session.commit()
 
-        # Check if the team now owns the region
         if not current_owner or new_total_deposit > highest_deposit.amount:
             flash(f"Congratulations! You now own the region: {region}")
 
-            # Fetch required context data
+            # Re-fetch all context for full update and trigger confetti
             teams = Team.query.all()
             challenges = Challenge.query.all()
             regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
 
-            # Fetch deposit information for each region
             region_deposits = {}
             for reg in regions:
                 deposits = Deposit.query.filter_by(region=reg).all()
@@ -135,7 +139,6 @@ def deposit():
                     'team_deposits': {deposit.team.name: deposit.amount for deposit in deposits}
                 }
 
-            # Render the template and pass the region_won flag to trigger fireworks
             return render_template('index.html', teams=teams, region_deposits=region_deposits, challenges=challenges, region_won=True)
         else:
             flash(f"£{amount} deposited in {region}. New total deposit: £{new_total_deposit}. New budget: £{team.budget}.")
@@ -144,26 +147,6 @@ def deposit():
         app.logger.error(f"Error processing deposit: {e}")
         flash(f"Error processing deposit: {e}")
         return redirect(url_for('index'))
-
-@app.route('/challenges')
-def challenges():
-    try:
-        # Get day and region from query parameters
-        day = request.args.get('day')
-        region = request.args.get('region')
-
-        # Query challenges based on the day and region
-        challenges = Challenge.query.filter_by(day=day, region=region).all()
-        if not challenges:
-            flash(f"No challenges found for Day {day} in {region}.")
-            return redirect(url_for('index'))
-        
-        return render_template('challenge.html', challenges=challenges, day=day, region=region)
-    except Exception as e:
-        app.logger.error(f"Error loading challenges for {region} on Day {day}: {e}")
-        flash(f"Error loading challenges: {e}")
-        return redirect(url_for('index'))
-
 
 @app.route('/complete_challenge', methods=['POST'])
 def complete_challenge():
@@ -175,24 +158,22 @@ def complete_challenge():
 
         team = Team.query.get(team_id)
         challenge = Challenge.query.get(challenge_id)
-
         multiplier = 1.5 if challenge.level == 'Easy' else 2 if challenge.level == 'Moderate' else 3
 
         if result == 'win':
             team.budget += wager * multiplier
-            challenge_won = True
+            flash(f'Challenge won! New budget: £{team.budget}')
         else:
             team.budget -= wager
+            flash(f'Challenge lost. New budget: £{team.budget}')
 
         db.session.commit()
-        flash(f'Challenge completed! New budget: £{team.budget}')
 
-        # Pass the required context variables when rendering the index page
+        # Fetch context data after updating team budget
         teams = Team.query.all()
         challenges = Challenge.query.all()
         regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
-
-        # Fetch deposit information for each region
+        
         region_deposits = {}
         for region in regions:
             deposits = Deposit.query.filter_by(region=region).all()
@@ -207,24 +188,30 @@ def complete_challenge():
     except Exception as e:
         app.logger.error(f"Error completing challenge: {e}")
         flash(f"Error completing challenge: {e}")
-        return redirect(url_for('index', challenge_won=challenge_won))
+        return redirect(url_for('index'))
 
 @app.route('/steal_challenge', methods=['POST'])
 def steal_challenge():
     try:
         winner_id = request.form['winner_id']
         loser_id = request.form['loser_id']
-        percentage = float(request.form['percentage'])
+        challenge_id = request.form['challenge_id']
+        success = request.form['success']  # Whether the steal was successful
 
         winner = Team.query.get(winner_id)
         loser = Team.query.get(loser_id)
+        challenge = Challenge.query.get(challenge_id)
+        steal_amount = loser.budget * (challenge.steal_percentage / 100)
 
-        steal_amount = loser.budget * (percentage / 100)
-        winner.budget += steal_amount
-        loser.budget -= steal_amount
+        if success == 'yes':
+            winner.budget += steal_amount
+            loser.budget -= steal_amount
+            flash(f'Successful steal! {challenge.steal_percentage}% of {loser.name}\'s budget stolen! New budget: £{winner.budget}')
+        else:
+            winner.budget -= steal_amount
+            flash(f'Steal failed! £{steal_amount} deducted from {winner.name}. New budget: £{winner.budget}')
 
         db.session.commit()
-        flash(f'Successfully stole {percentage}% of {loser.name}\'s budget! New budget: £{winner.budget}')
         return redirect(url_for('index'))
     except Exception as e:
         app.logger.error(f"Error performing steal: {e}")
@@ -240,17 +227,17 @@ def select_transit():
 
         transport_data = {
             'walking': {'speed': 5, 'cost_per_min': 0},
-            'bus': {'speed': 20, 'cost_per_min': 5},  # Half the original cost
-            'tram': {'speed': 30, 'cost_per_min': 10},  # Half the original cost
-            'train': {'speed': 45, 'cost_per_min': 15},  # Half the original cost
-            'taxi': {'speed': 40, 'cost_per_min': 20},  # Half the original cost
-            'uber': {'speed': 50, 'cost_per_min': 25}  # Half the original cost
+            'bus': {'speed': 20, 'cost_per_min': 5},
+            'tram': {'speed': 30, 'cost_per_min': 10},
+            'train': {'speed': 45, 'cost_per_min': 15},
+            'taxi': {'speed': 40, 'cost_per_min': 20},
+            'uber': {'speed': 50, 'cost_per_min': 25}
         }
 
         speed = transport_data[transport_mode]['speed']
         cost_per_min = transport_data[transport_mode]['cost_per_min']
 
-        travel_time = (distance / speed) * 60  # Convert to minutes
+        travel_time = (distance / speed) * 60
         travel_cost = travel_time * cost_per_min
 
         team = Team.query.get(team_id)
@@ -273,32 +260,23 @@ def add_day_bonus():
     flash('£1000 bonus added to all teams!')
     return redirect(url_for('index'))
 
-# The reset-teams route
 @app.route('/admin/reset_teams', methods=['POST'])
 def reset_teams():
     try:
-        # Reset each team's budget to 2000.0
         teams = Team.query.all()
         for team in teams:
             team.budget = 2000.0
-        
-        # Remove all existing deposits
         Deposit.query.delete()
-
-        # Commit the changes
         db.session.commit()
-
         flash('All teams and deposits have been reset.', 'success')
     except Exception as e:
-        db.session.rollback()  # Rollback in case of an error
+        db.session.rollback()
         app.logger.error(f"Error resetting teams and deposits: {e}")
         flash(f"Error resetting teams and deposits: {e}", 'danger')
-    
     return redirect(url_for('index'))
-# Ensure database tables are created
-with app.app_context():
-    db.create_all()  # Create all tables based on models
 
-# Run the app with debug mode enabled
+with app.app_context():
+    db.create_all()
+
 if __name__ == '__main__':
     app.run(debug=True)

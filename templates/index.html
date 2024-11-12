@@ -73,13 +73,9 @@
 
             <label for="region">Select Region:</label>
             <select name="region" required>
-                <option value="Northern Quarter">Northern Quarter</option>
-                <option value="Ancoats">Ancoats</option>
-                <option value="Spinningfields">Spinningfields</option>
-                <option value="Castlefield">Castlefield</option>
-                <option value="Deansgate">Deansgate</option>
-                <option value="Piccadilly Gardens">Piccadilly Gardens</option>
-                <option value="Oxford Road">Oxford Road</option>
+                {% for region in region_deposits.keys() %}
+                <option value="{{ region }}">{{ region }}</option>
+                {% endfor %}
             </select>
 
             <label for="amount">Deposit Amount (£):</label>
@@ -134,19 +130,23 @@
                 {% endfor %}
             </select>
 
-            <label for="percentage">Steal Percentage:</label>
-            <input type="number" name="percentage" placeholder="Steal Percentage" required>
+            <label for="challenge_id">Select Challenge:</label>
+            <select name="challenge_id" required>
+                {% for challenge in challenges if challenge.steal_percentage > 0 %}
+                <option value="{{ challenge.id }}">{{ challenge.challenge_name }} (Steal: {{ challenge.steal_percentage }}%)</option>
+                {% endfor %}
+            </select>
 
-            <label for="success">Was the steal successful?</label>
-            <select name="success" required>
+            <label for="success">Was the Steal Successful?</label>
+            <select name="success">
                 <option value="yes">Yes</option>
                 <option value="no">No</option>
             </select>
 
-            <button type="submit">Steal</button>
+            <button type="submit">Execute Steal</button>
         </form>
 
-        <!-- Select Transit Method Form -->
+        <!-- Transit Tracking Form -->
         <h2>Select Transit Method</h2>
         <form action="/select_transit" method="POST">
             <label for="team_id">Select Team:</label>
@@ -172,28 +172,25 @@
             <button type="submit">Calculate Cost and Travel Time</button>
         </form>
 
-        <!-- Add Daily Bonus Button -->
-        <h2>Add Daily Bonus</h2>
-        <a href="/add_day_bonus" class="btn">Add £1000 Bonus to All Teams</a>
-
-        <!-- Reset All Teams Button -->
-        <h2>Reset All Teams</h2>
-        <form action="/admin/reset_teams" method="POST">
-            <button type="submit" class="btn">Reset All Teams and Deposits</button>
-        </form>
-
-        <!-- Add New Team Form -->
-        <h2>Add a New Team</h2>
-        <form action="/add_team" method="POST">
-            <input type="text" name="team_name" placeholder="Enter team name" required>
-            <button type="submit">Add Team</button>
-        </form>
-
+        <!-- Admin Actions -->
+        <div class="admin-section">
+            <h2>Admin Actions</h2>
+            <form action="/add_day_bonus">
+                <button type="submit" class="btn">Add £1000 Bonus to All Teams</button>
+            </form>
+            <form action="/admin/reset_teams" method="POST">
+                <button type="submit" class="btn">Reset All Teams and Deposits</button>
+            </form>
+            <form action="/add_team" method="POST">
+                <input type="text" name="team_name" placeholder="Enter team name" required>
+                <button type="submit">Add Team</button>
+            </form>
+        </div>
     </div>
 
     <!-- Trigger confetti if region_won or challenge_won is true -->
     <script>
-        {% if region_won or request.args.get('challenge_won') %}
+        {% if region_won or request.args.get('success') %}
             confetti({
                 particleCount: 200,
                 spread: 70,
