@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manchester Territory Game</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Include the canvas-confetti library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
@@ -46,10 +45,10 @@
             <tbody>
                 {% for region, info in region_deposits.items() %}
                 <tr>
-                    <td data-label="Region">{{ region }}</td>
-                    <td data-label="Current Owner">{{ info.owner or 'None' }}</td>
-                    <td data-label="Total Deposit">£{{ info.total }}</td>
-                    <td data-label="Deposits by Team">
+                    <td>{{ region }}</td>
+                    <td>{{ info.owner or 'None' }}</td>
+                    <td>£{{ info.total }}</td>
+                    <td>
                         <ul>
                             {% for team_name, amount in info.team_deposits.items() %}
                             <li>{{ team_name }}: £{{ amount }}</li>
@@ -61,13 +60,44 @@
             </tbody>
         </table>
 
-        <!-- Deposit Money Form to Claim a Region -->
+        <!-- Challenge Table Display -->
+        <h2>Challenges</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Challenge Name</th>
+                    <th>Region</th>
+                    <th>Day</th>
+                    <th>Level</th>
+                    <th>Steal Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for challenge in challenges %}
+                <tr>
+                    <td>{{ challenge.challenge_name }}</td>
+                    <td>{{ challenge.region }}</td>
+                    <td>{{ challenge.day }}</td>
+                    <td>{{ challenge.level }}</td>
+                    <td>
+                        {% if challenge.steal_percentage > 0 %}
+                            {{ challenge.steal_percentage }}%
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Deposit Money Form -->
         <h2>Claim a Region</h2>
         <form action="/deposit" method="POST">
             <label for="team_id">Select Team:</label>
             <select name="team_id" required>
                 {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                <option value="{{ team.id }}">{{ team.name }}</option>
                 {% endfor %}
             </select>
 
@@ -79,7 +109,7 @@
             </select>
 
             <label for="amount">Deposit Amount (£):</label>
-            <input type="number" name="amount" placeholder="Deposit Amount" required>
+            <input type="number" name="amount" required>
 
             <button type="submit">Deposit</button>
         </form>
@@ -90,19 +120,19 @@
             <label for="team_id">Select Team:</label>
             <select name="team_id" required>
                 {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                <option value="{{ team.id }}">{{ team.name }}</option>
                 {% endfor %}
             </select>
 
             <label for="challenge_id">Select Challenge:</label>
             <select name="challenge_id" required>
                 {% for challenge in challenges %}
-                <option value="{{ challenge.id }}">{{ challenge.challenge_name }} (ID: {{ challenge.id }}, Day {{ challenge.day }} - {{ challenge.region }})</option>
+                <option value="{{ challenge.id }}">{{ challenge.challenge_name }} (Day {{ challenge.day }}, Region: {{ challenge.region }})</option>
                 {% endfor %}
             </select>
 
             <label for="wager">Wager Amount:</label>
-            <input type="number" name="wager" placeholder="Wager Amount" required>
+            <input type="number" name="wager" required>
 
             <label for="result">Result:</label>
             <select name="result">
@@ -119,14 +149,14 @@
             <label for="winner_id">Select Winning Team:</label>
             <select name="winner_id" required>
                 {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                <option value="{{ team.id }}">{{ team.name }}</option>
                 {% endfor %}
             </select>
 
             <label for="loser_id">Select Losing Team:</label>
             <select name="loser_id" required>
                 {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                <option value="{{ team.id }}">{{ team.name }}</option>
                 {% endfor %}
             </select>
 
@@ -152,7 +182,7 @@
             <label for="team_id">Select Team:</label>
             <select name="team_id" required>
                 {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }} (ID: {{ team.id }})</option>
+                <option value="{{ team.id }}">{{ team.name }}</option>
                 {% endfor %}
             </select>
 
@@ -172,14 +202,14 @@
             <button type="submit">Calculate Cost and Travel Time</button>
         </form>
 
-        <!-- Admin Actions -->
+        <!-- Admin Section -->
         <div class="admin-section">
             <h2>Admin Actions</h2>
             <form action="/add_day_bonus">
-                <button type="submit" class="btn">Add £1000 Bonus to All Teams</button>
+                <button type="submit">Add £1000 Bonus to All Teams</button>
             </form>
             <form action="/admin/reset_teams" method="POST">
-                <button type="submit" class="btn">Reset All Teams and Deposits</button>
+                <button type="submit">Reset All Teams and Deposits</button>
             </form>
             <form action="/add_team" method="POST">
                 <input type="text" name="team_name" placeholder="Enter team name" required>
@@ -188,7 +218,7 @@
         </div>
     </div>
 
-    <!-- Trigger confetti if region_won or challenge_won is true -->
+    <!-- Trigger confetti for winning actions -->
     <script>
         {% if region_won or request.args.get('success') %}
             confetti({

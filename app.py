@@ -38,8 +38,8 @@ class Challenge(db.Model):
     challenge_name = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
     level = db.Column(db.String(20), nullable=False)
-    steal_percentage = db.Column(db.Float, default=0.0)
-
+    steal_percentage = db.Column(db.Integer, default=0) 
+    
 class Deposit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     region = db.Column(db.String(100), nullable=False)
