@@ -1,24 +1,150 @@
-body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; }
-.container { max-width: 800px; margin: auto; padding: 20px; }
-h1, h2 { text-align: center; color: #333; }
-ul { list-style-type: none; padding: 0; }
-li { background: #fff; margin: 10px 0; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
-input, select, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-button { background-color: #007bff; color: white; border: none; cursor: pointer; }
-button:hover { background-color: #0056b3; }
-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 16px; text-align: left; }
-table th, table td { padding: 12px; border-bottom: 1px solid #ddd; }
-table th { background-color: #007bff; color: white; }
-table td { background-color: #fff; }
-.admin-section { background-color: #e0e7ff; padding: 15px; border-radius: 8px; margin-top: 20px; }
+/* General Page Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Header Styling */
+h1, h2 {
+    text-align: center;
+    color: #333;
+}
+
+/* Lists */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Inputs */
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+}
+
+table th, table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #007bff;
+    color: white;
+}
+
+table td {
+    background-color: #fff;
+}
+
+/* Responsive Table for Mobile Devices */
 @media screen and (max-width: 600px) {
-    .container { padding: 10px; }
-    input, select, button { padding: 8px; }
-    table { border: 0; }
-    table caption { font-size: 1.3em; }
-    table thead { display: none; }
-    table tr { display: block; margin-bottom: .625em; }
-    table td { display: block; font-size: .9em; text-align: right; border-bottom: 1px solid #ddd; position: relative; padding-left: 50%; }
-    table td::before { content: attr(data-label); position: absolute; left: 0; width: 50%; padding-left: 15px; font-weight: bold; text-align: left; }
-    table td:last-child { border-bottom: 0; }
+    .container {
+        padding: 10px;
+    }
+
+    input, select, button {
+        padding: 8px;
+    }
+
+    table {
+        border: 0;
+    }
+
+    table caption {
+        font-size: 1.3em;
+    }
+
+    table thead {
+        display: none;
+    }
+
+    table tr {
+        display: block;
+        margin-bottom: .625em;
+    }
+
+    table td {
+        display: block;
+        font-size: .9em;
+        text-align: right;
+        border-bottom: 1px solid #ddd;
+        position: relative;
+        padding-left: 50%;
+    }
+
+    table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    table td:last-child {
+        border-bottom: 0;
+    }
+}
+
+/* Admin Section Styling */
+.admin-section {
+    background-color: #e9ecef;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.admin-section h2 {
+    color: #333;
+}
+
+/* Links */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }

@@ -75,7 +75,12 @@
             <tbody>
                 {% for challenge in challenges %}
                 <tr>
-                    <td>{{ challenge.challenge_name }}</td>
+                    <td>
+                        <!-- Link to view_challenge template to show the challenge description -->
+                        <a href="{{ url_for('view_challenge', challenge_id=challenge.id) }}">
+                            {{ challenge.challenge_name }}
+                        </a>
+                    </td>
                     <td>{{ challenge.region }}</td>
                     <td>{{ challenge.day }}</td>
                     <td>{{ challenge.level }}</td>
@@ -206,10 +211,10 @@
         <div class="admin-section">
             <h2>Admin Actions</h2>
             <form action="/add_day_bonus">
-                <button type="submit">Add £1000 Bonus to All Teams</button>
+                <button type="submit" class="btn">Add £1000 Bonus to All Teams</button>
             </form>
             <form action="/admin/reset_teams" method="POST">
-                <button type="submit">Reset All Teams and Deposits</button>
+                <button type="submit" class="btn">Reset All Teams and Deposits</button>
             </form>
             <form action="/add_team" method="POST">
                 <input type="text" name="team_name" placeholder="Enter team name" required>

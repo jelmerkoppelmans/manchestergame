@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import logging
 from logging.handlers import RotatingFileHandler
+from flask_migrate import Migrate 
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -14,6 +16,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 
 # Logging configuration
 if not os.path.exists('logs'):
@@ -39,7 +43,7 @@ class Challenge(db.Model):
     description = db.Column(db.Text)
     level = db.Column(db.String(20), nullable=False)
     steal_percentage = db.Column(db.Integer, default=0) 
-    
+
 class Deposit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     region = db.Column(db.String(100), nullable=False)
