@@ -3,7 +3,7 @@ import pandas as pd
 from app import db, Challenge, app
 
 # Define the path for the CSV file in the same directory
-file_path = os.path.join(os.path.dirname(__file__), 'Manniegame_challenges.csv')
+file_path = os.path.join(os.path.dirname(__file__), 'challenges.csv')
 challenges_df = pd.read_csv(file_path)
 
 # Function to clear and seed the challenges
