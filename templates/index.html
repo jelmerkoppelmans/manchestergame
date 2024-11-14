@@ -166,14 +166,14 @@
         <!-- Perform a Steal Form -->
         <h2>Perform a Steal</h2>
         <form action="/steal_challenge" method="POST">
-            <label for="winner_id">Select Winning Team:</label>
+            <label for="winner_id">Select Stealing Team:</label>
             <select name="winner_id" required>
                 {% for team in teams %}
                 <option value="{{ team.id }}">{{ team.name }}</option>
                 {% endfor %}
             </select>
 
-            <label for="loser_id">Select Losing Team:</label>
+            <label for="loser_id">Select Team Stealing From:</label>
             <select name="loser_id" required>
                 {% for team in teams %}
                 <option value="{{ team.id }}">{{ team.name }}</option>
