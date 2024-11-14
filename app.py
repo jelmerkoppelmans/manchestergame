@@ -162,7 +162,8 @@ def deposit():
             # Re-fetch all context for full update and trigger confetti
             teams = Team.query.all()
             challenges = Challenge.query.all()
-            regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
+            regions = sorted(set(ch.region for ch in Challenge.query.all()))
+
 
             region_deposits = {}
             for reg in regions:
@@ -207,7 +208,8 @@ def complete_challenge():
         # Fetch context data after updating team budget
         teams = Team.query.all()
         challenges = Challenge.query.all()
-        regions = ['Northern Quarter', 'Ancoats', 'Spinningfields', 'Castlefield', 'Deansgate', 'Piccadilly Gardens', 'Oxford Road']
+        regions = sorted(set(ch.region for ch in Challenge.query.all()))
+
         
         region_deposits = {}
         for region in regions:
