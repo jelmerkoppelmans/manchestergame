@@ -63,10 +63,6 @@
         <!-- Challenge Table Display with Day and Region Filter -->
         <h2>Challenges</h2>
         <form action="{{ url_for('index') }}" method="get">
-            <label for="day">Select Day:</label>
-            <select name="day" id="day" onchange="this.form.submit()">
-                <option value="1" {% if selected_day == 1 %}selected{% endif %}>Day 1</option>
-            </select>
 
             <label for="region">Select Region:</label>
             <select name="region" id="region" onchange="this.form.submit()">
