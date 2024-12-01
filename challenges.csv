@@ -1,55 +1,29 @@
 day,region,challenge_name,description,level,steal
-1,Northern Quarter,Atom Split Tribute,"Create a simple science demonstration (e.g., vinegar and baking soda explosion) to simulate the atom split .",Moderate,no
-1,Northern Quarter,Straw Tower,Build a 50 cm tower that stands for 10 seconds using available materials .,Easy,no
-1,Northern Quarter,Make a Putt,Roll a ball into a 6-inch cup from 10 feet. Set up items to guide the ball .,Moderate,no
-1,Northern Quarter,Vinyl Cover Recreation,One team member guesses the album while the others recreate a famous album cover pose .,Moderate,no
-1,Ancoats,Cheese Rolling,Roll a ball of cheese 15 meters in a straight line .,Easy,no
-1,Ancoats,Drink Cake,Consume at least 1/3 of a slice of cake using only a straw .,Moderate,yes
-1,Ancoats,Throw a Dog (Sausage),"Throw a sausage into a bun from 10 meters, no hands allowed for the catcher .",Moderate,no
-1,Ancoats,Egg Drop,Create a vessel for an egg and throw it 10 feet in the air. The egg cannot crack .,Moderate,no
-1,Spinningfields,Bee Riddle Under a Bridge,Answer a riddle about a bee under a bridge. You get one guess .,Moderate,no
+1,Spinningfields,Riddle Under a Bridge,Ask the other team for a riddle whilst you are under a bridge. You get one guess.,Moderate,no
 1,Spinningfields,Find the Town Hall,Locate the town hall in 30 minutes without your phone or help .,Hard,no
 1,Spinningfields,Egg Drop,Create a vessel for an egg and throw it 10 feet in the air. It must not crack .,Moderate,no
 1,Spinningfields,Commit a Dutch Crime,Do something legal in the UK but illegal in the Netherlands .,Moderate,no
-1,Castlefield,Use a Fancy Restroom,Use the restroom of a hotel where the room costs more than €500 a night .,Moderate,no
-1,Castlefield,Build and Ride a Go-Kart,Build a go-kart with 4 wheels and have one team member ride it 50 meters downhill .,Hard,no
-1,Castlefield,Give a Piggyback Ride,Carry your teammate around the perimeter of a local park .,Easy,yes
-1,Castlefield,Touch a Bird,Find and touch a live bird with your hand .,Moderate,no
-1,Deansgate,Transfer Fountain Water,Transfer a cup of water from one fountain to another without spilling more than 1/4 of the cup. The fountains cannot be within eyesight of each other .,Moderate,no
-1,Deansgate,Eat an Egg,"Eat one egg in any form (not completely raw), recognizably as an egg .",Moderate,no
-1,Deansgate,Pop a Kernel,Pop a kernel of corn by any means .,Hard,yes
-1,Oxford Road,Eat an Egg,"Eat one egg in any form (not completely raw), recognizably as an egg .",Moderate,no
-1,Oxford Road,Transfer Fountain Water,Transfer a cup of water between two fountains without spilling .,Moderate,yes
-1,Oxford Road,Egg Drop,Create a vessel for an egg and throw it 10 feet in the air. The egg cannot crack .,Moderate,no
-1,Oxford Road,Finish a Puzzle,Complete a 250-piece puzzle in 60 minutes .,Hard,no
+1,Piccadilly Gardens,Taste Test Challenge,"One teammate, blindfolded, tastes and correctly guesses 3 traditional British foods (e.g., black pudding, Marmite, scones) .",Moderate,no
 1,Piccadilly Gardens,Play Beer Pong,Fill a cup and throw a ball from 6 feet. Get the ball in within 5 tries .,Moderate,no
-1,Piccadilly Gardens,Stalk a Bee,Record a single bee on camera continuously for 30 seconds without losing sight of it .,Hard,no
 1,Piccadilly Gardens,Make a Recognizable Portrait,"Draw a portrait from a local museum, and your teammates must guess who it is .",Moderate,no
-1,Piccadilly Gardens,Get a Pedicure,Both team members must get a pedicure with nail polish in state colors .,Hard,no
-2,Northern Quarter,Paper Airplane,Construct a paper airplane and fly it 10 meters with 3 tries .,Moderate,no
-2,Northern Quarter,Straw Tower Power,Build a straw tower at least 50 cm tall that can stand for 10 seconds using any materials nearby .,Easy,no
-2,Northern Quarter,Putt Like a Pro,"Roll a ball into a cup no larger than 6 inches in diameter from 10 feet away, using creative obstacles to guide the ball .",Moderate,no
-2,Northern Quarter,Vinyl Guesswork,Recreate a famous vinyl album cover pose while one team member guesses the album without using any assistance .,Moderate,no
-2,Ancoats,Roll that Cheese,Roll a ball of cheese for 15 meters in a straight line .,Easy,no
-2,Ancoats,Taste Test Challenge,"One teammate, blindfolded, tastes and correctly guesses 3 traditional British foods (e.g., black pudding, Marmite, scones) .",Moderate,no
-2,Ancoats,Throw the Dog (Sausage),One team member throws a sausage 10 meters while the other catches it in a bun without using their hands .,Moderate,no
-2,Ancoats,Goosebumps with a Goose,"Film a 10-second video of one teammate showing visible goosebumps while standing near a goose in the frame (, ).",Hard,yes
-2,Spinningfields,Eat an Alliterative Sandwich,"Make and eat a sandwich with 5 fillings, all starting with the same letter .",Moderate,no
-2,Spinningfields,Mind Meld,"One teammate guesses a letter from the word ""Manchester"" that the other selected, with three attempts allowed .",Moderate,yes
-2,Spinningfields,Predict Market Flow,"Predict the number of customers making purchases at a store in the next 10 minutes. Guess within 40% accuracy, or lose the challenge .",Hard,yes
-2,Spinningfields,Egg Drop Defense,"Build a protective vessel for an egg, throw it at least 10 feet in the air, and ensure it doesn’t crack on landing .",Moderate,no
-2,Castlefield,High-Class Break,Use the restroom of a hotel with rooms costing more than €500 per night .,Moderate,no
-2,Castlefield,Go-Kart Madness,"Build a go-kart with 4 wheels, then have one team member ride it downhill for at least 50 meters .",Hard,no
-2,Castlefield,Park Piggyback,"Give your teammate a piggyback ride around the entire perimeter of a local park, switching off as needed .",Moderate,no
-2,Castlefield,Bird Touch,Find and touch a live bird with your hand. The bird must be real and alive .,Moderate,no
-2,Deansgate,Water Transfer Hunt,Transfer a cup of water from one fountain to another without spilling more than 1/4 of it. The fountains must be out of each other’s line of sight .,Moderate,no
-2,Deansgate,Egg Eater,"Eat one egg in any form, as long as it is clearly identifiable as an egg .",Moderate,no
-2,Deansgate,Pop Goes the Kernel,Pop a single kernel of corn using any method available .,Moderate,no
-2,Oxford Road,Vegetarian Dish Hunt,"Find a vegetarian dish at a restaurant, take a photo, and list its ingredients .",Moderate,no
-2,Oxford Road,Build a Train Model,Create a simple model of a railway track or train using available materials .,Moderate,no
-2,Oxford Road,Puzzle Rush,Complete a 250-piece puzzle in under 60 minutes .,Hard,no
-2,Oxford Road,Egg-cellent Drop,"Create a vessel for an egg, throw it 10 feet in the air, and ensure the egg doesn’t crack .",Moderate,no
-2,Piccadilly Gardens,Beer Pong Bounce,"Throw a ball into a beer-filled cup from a distance of 6 feet, with up to 5 attempts allowed .",Moderate,no
-2,Piccadilly Gardens,Bee Tracker,"Record a single bee on camera for a continuous 30 seconds. If you lose track or stop recording, restart .",Hard,no
-2,Piccadilly Gardens,Portrait Guessing,"Draw a portrait of someone from a local museum and have teammates guess who it is, without using any words .",Moderate,no
-2,Piccadilly Gardens,Pedicure Paint Challenge,Both team members must get a pedicure with nail polish in state colors. The pedicure must include both feet .,Hard,no
+1,Piccadilly Gardens,Get a Pedicure,A team members must get a pedicure with nail polish in national colors .,Hard,no
+1,Oxford Road,Transfer Fountain Water,Transfer a cup of water between two fountains without spilling .,Moderate,yes
+1,Oxford Road,Predict Market Flow,"Predict the number of customers making purchases at a store in the next 10 minutes. Guess within 40% accuracy, or lose the challenge .",Hard,yes
+1,Oxford Road,Paper Airplane,Construct a paper airplane and fly it 10 meters with 3 tries .,Moderate,no
+1,Oxford Road,Finish a Puzzle,Complete a 250-piece puzzle in 60 minutes .,Hard,no
+1,Northern Quarter,Straw Tower,Build a 50 cm tower that stands for 10 seconds using available materials .,Easy,no
+1,Northern Quarter,Mind Meld,"One teammate guesses a letter from the word ""Manchester"" that the other selected, with three attempts allowed .",Moderate,yes
+1,Northern Quarter,Build a Train Model,Create a simple model of a railway track or train using available materials .,Moderate,no
+1,Northern Quarter,Atom Split Tribute,"Create a simple science demonstration (e.g., vinegar and baking soda explosion) to simulate the atom split .",Moderate,no
+1,Deansgate,Pop a Kernel,Pop a kernel of corn by any means.,Hard,yes
+1,Deansgate,Eat an Egg,"Eat one egg in any form (not completely raw), recognizably as an egg .",Moderate,no
+1,Deansgate,Touch a Bird,Find and touch a live bird with your hand .,Moderate,no
+1,Deansgate,Eat an Alliterative Sandwich,"Make and eat a sandwich with 5 fillings, all starting with the same letter .",Moderate,no
+1,Castlefield,Vinyl Guesswork,Recreate a famous vinyl album cover pose while one team member guesses the album without using any assistance .,Moderate,no
+1,Castlefield,Use a Fancy Restroom,Use the restroom of a hotel where the room costs more than €500 a night .,Moderate,no
+1,Castlefield,Give a Piggyback Ride,Carry your teammate around the perimeter of a local park .,Easy,yes
+1,Castlefield,Build and Ride a Go-Kart,Build a go-kart with 4 wheels and have one team member ride it 50 meters downhill .,Hard,no
+1,Ancoats,Throw a Dog (Sausage),"Throw a sausage into a bun from 10 meters, no hands allowed for the catcher .",Moderate,no
+1,Ancoats,Goosebumps with a Goose,Film a 10-second video of one teammate showing visible goosebumps while standing near a goose in the frame .,Hard,yes
+1,Ancoats,Drink Cake,Consume at least 1/3 of a slice of cake using only a straw .,Moderate,yes
+1,Ancoats,Cheese Rolling,Roll a ball of cheese 15 meters in a straight line .,Easy,no
